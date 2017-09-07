@@ -1,5 +1,10 @@
-using PolynomialBases
 using Base.Test
+using PolynomialBases
 
-# write your own tests here
-@test 1 == 2
+tic()
+
+@time @testset "Interpolation" begin include("interpolation_test.jl") end
+@time @testset "Integration" begin include("integration_test.jl") end
+@time @testset "Derivatives" begin include("derivative_test.jl") end
+
+toc()
