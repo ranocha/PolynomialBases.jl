@@ -1,6 +1,26 @@
 
 Base.@pure degree(basis::NodalBasis{Line}) = length(basis.nodes)-1
 
+function change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
+                                                values, src_basis::NodalBasis{Domain})
+    @boundscheck begin
+        @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
+    end
+    ret = similar(values)
+    @inbounds change_basis!(ret, dest_basis, values, src_basis)
+    ret
+end
+
+function change_basis!{Domain<:AbstractDomain}(ret, dest_basis::NodalBasis{Domain},
+                                                values, src_basis::NodalBasis{Domain})
+    @boundscheck begin
+        @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
+        @assert length(values) == length(ret)
+    end
+    interpolate!(ret, dest_basis.nodes, values, src_basis)
+    nothing
+end
+
 
 
 """

@@ -25,7 +25,8 @@ include("nodal_bases.jl")
 export LobattoLegendre, GaussLegendre
 
 # interpolation
-export interpolate, interpolate!, interpolation_matrix, interpolation_matrix!
+export interpolate, interpolate!, interpolation_matrix, interpolation_matrix!,
+        change_basis, change_basis!
 
 # derivative
 export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!

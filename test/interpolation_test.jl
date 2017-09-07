@@ -66,3 +66,20 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
         @test norm(u1 - u2) < 1.e-14
     end
 end
+
+# change of bases
+for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10
+    basis1 = LobattoLegendre(p)
+    basis2 = GaussLegendre(p)
+
+    u1 = ufc.(basis1.nodes)
+    u2 = ufc.(basis2.nodes)
+
+    u12 = change_basis(basis1, u2, basis2)
+    u21 = change_basis(basis2, u1, basis1)
+
+    xplot = linspace(-1, 1, 100)
+
+    @test norm(interpolate(xplot,u1,basis1) - interpolate(xplot,u12,basis1), Inf) < tolerance(p, ufc)
+    @test norm(interpolate(xplot,u2,basis2) - interpolate(xplot,u21,basis2), Inf) < tolerance(p, ufc)
+end

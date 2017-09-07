@@ -23,4 +23,4 @@ function integrate(func, u, basis::NodalBasis)
 end
 
 integrate(u, weights) = integrate(identity, u, weights)
-integrate(u, basis) = integrate(identity, u, basis)
+integrate(u, basis::NodalBasis) = integrate(identity, u, basis)
