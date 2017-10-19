@@ -58,7 +58,7 @@ function LobattoLegendre(p::Int, T=Float64)
     LobattoLegendre(nodes, weights, baryweights, D)
 end
 
-function show{T}(io::IO, basis::LobattoLegendre{T})
+function Base.show{T}(io::IO, basis::LobattoLegendre{T})
   print(io, "LobattoLegendre{", T, "}: Nodal Lobatto Legendre basis of degree ",
             degree(basis))
 end
@@ -94,7 +94,7 @@ function GaussLegendre(p::Int, T=Float64)
     GaussLegendre(nodes, weights, baryweights, D)
 end
 
-function show{T}(io::IO, basis::GaussLegendre{T})
+function Base.show{T}(io::IO, basis::GaussLegendre{T})
   print(io, "GaussLegendre{", T, "}: Nodal Gauss Legendre basis of degree ",
             degree(basis))
 end

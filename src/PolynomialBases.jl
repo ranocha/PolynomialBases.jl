@@ -5,9 +5,6 @@ using Parameters
 using FastGaussQuadrature
 
 
-import Base: show
-
-
 abstract type AbstractDomain{Dim} end
 struct Line <: AbstractDomain{1} end
 
