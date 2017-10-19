@@ -5,7 +5,7 @@
 Compute the barycentric weights corresponding to the nodes `x`.
 [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 30].
 """
-function barycentric_weights{T<:Real}(x::AbstractVector{T})
+function barycentric_weights(x::AbstractVector)
     w = ones(x)
     @inbounds barycentric_weights!(w, x)
     w
