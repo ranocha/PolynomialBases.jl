@@ -46,8 +46,8 @@ end
 
 # some regression tests
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
-    for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10
-        basis = basis_type(p)
+    for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
+        basis = basis_type(p, T)
         u = ufc.(basis.nodes)
         xplot = linspace(-1, 1, 100)
         uplot = interpolate(xplot, u, basis)
@@ -57,8 +57,8 @@ end
 
 # compare direct interpolation and matrix
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
-    for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10
-        basis = basis_type(p)
+    for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
+        basis = basis_type(p, T)
         u = ufc.(basis.nodes)
         xplot = linspace(-1, 1, 100)
         u1 = interpolate(xplot, u, basis)
@@ -68,9 +68,9 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
 end
 
 # change of bases
-for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10
-    basis1 = LobattoLegendre(p)
-    basis2 = GaussLegendre(p)
+for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
+    basis1 = LobattoLegendre(p, T)
+    basis2 = GaussLegendre(p, T)
 
     u1 = ufc.(basis1.nodes)
     u2 = ufc.(basis2.nodes)
