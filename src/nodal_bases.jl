@@ -1,6 +1,18 @@
+"""
+    degree(basis::NodalBasis{Line})
 
+Return the polynomial degree used by `basis`.
+"""
 Base.@pure degree(basis::NodalBasis{Line}) = length(basis.nodes)-1
 
+
+"""
+    change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
+                                         values, src_basis::NodalBasis{Domain})
+
+Perform the change of basis for the coefficients `values` from `src_basis` to
+`dest_basis`.
+"""
 function change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
                                                 values, src_basis::NodalBasis{Domain})
     @boundscheck begin
@@ -11,14 +23,46 @@ function change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
     ret
 end
 
+"""
+    change_basis!{Domain<:AbstractDomain}(ret, dest_basis::NodalBasis{Domain},
+                                          values, src_basis::NodalBasis{Domain})
+
+Perform the change of basis for the coefficients `values` from `src_basis` to
+`dest_basis` and store the resulting coefficients in `ret`.
+"""
 function change_basis!{Domain<:AbstractDomain}(ret, dest_basis::NodalBasis{Domain},
-                                                values, src_basis::NodalBasis{Domain})
+                                               values, src_basis::NodalBasis{Domain})
     @boundscheck begin
         @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
         @assert length(values) == length(ret)
     end
     interpolate!(ret, dest_basis.nodes, values, src_basis)
     nothing
+end
+
+
+"""
+    utility_matrices(basis::NodalBasis{Line})
+
+Return the matrices
+- `D`, derivative matrix
+- `M`, mass matrix
+- `R`, restriction matrix (interpolation to the boundaries)
+- `B`, boundary normal matrix
+- `MinvRtB = M \ R' * B`
+used in the formulation of flux reconstruction / correction procedure via
+reconstruction using summation-by-parts operators, cf. Ranocha, Öffner, Sonar
+(2016) Summation-by-parts operators for correction procedure via reconstruction,
+Journal of Computational Physics 311, 299-328.
+"""
+function utility_matrices(basis::NodalBasis{Line})
+    D = basis.D
+    M = Diagonal(basis.weights)
+    R = interpolation_matrix([-1,1], basis)
+    B = Diagonal([-1,1])
+    MinvRtB = M \ R' * B
+
+    D, M, R, B, MinvRtB
 end
 
 

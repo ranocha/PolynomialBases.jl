@@ -17,7 +17,6 @@ include("integration.jl")
 include("derivative.jl")
 include("nodal_bases.jl")
 
-
 # types
 export LobattoLegendre, GaussLegendre
 
@@ -30,6 +29,9 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 
 # integration
 export integrate
+
+# other utilities
+export utility_matrices
 
 
 end # module
