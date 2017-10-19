@@ -32,7 +32,7 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 export integrate
 
 # Legender polynomials
-export legendre
+export legendre, legendre_vandermonde, legendre_D, legendre_M
 
 # other utilities
 export utility_matrices

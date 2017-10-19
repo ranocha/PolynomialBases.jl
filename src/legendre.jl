@@ -151,3 +151,58 @@ function lobatto_legendre_nodes_and_weights(p, T=Float64::Type, tol=4*eps(T), ma
 
     return nodes, weights
 end
+
+
+
+doc"
+    legendre_vandermonde(nodes)
+
+Computes the Vandermonde matrix with respect to the Legendre polynomials and
+the nodal basis on `nodes`.
+The Vandermonde matrix $V$ is the transformation matrix from the modal Legendre
+basis to the nodal Lagrange basis associated with `nodes`.
+"
+function legendre_vandermonde(nodes::AbstractVector)
+    T = eltype(nodes)
+    pp1 = length(nodes)
+    V = zeros(T, pp1, pp1)
+    for j in 1:pp1, (i,x) in enumerate(nodes)
+      V[i, j] = legendre(x, j-1)
+    end
+    V
+end
+
+legendre_vandermonde(basis::NodalBasis{Line}) = legendre_vandermonde(basis.nodes)
+
+
+"""
+    legendre_M(p, T=Float64)
+
+Computes the diagonal mass matrix in the modal Legendre basis up to degree `p`
+using the scalar type `T`.
+"""
+function legendre_M(p, T=Float64)
+  Diagonal( T[2//(2n+1) for n in 0:p] )
+end
+
+
+"""
+    legendre_D(p, T=Float64)
+
+Computes the derivative matrix in the modal Legendre basis up to degree `p`
+using the scalar type `T`.
+"""
+function legendre_D(p, T=Float64)
+  D = zeros(T, p+1, p+1)
+  if p >= 1
+    D[1, 2] = 1
+  end
+  if p >= 2
+    D[2, 3] = 3
+  end
+  for col in 4:p+1
+    D[:, col] = D[:, col-2]
+    D[col-1, col] = 2*col-3
+  end
+  D
+end
