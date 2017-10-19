@@ -1,0 +1,153 @@
+"""
+    legendre(x, p::Integer)
+
+Evaluate the Legendre polynomial of degree `p` at `x` using the three term
+recursion [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 20].
+"""
+function legendre(x, p::Integer)
+    if p <= 0
+        return one(x)
+    elseif p == 1
+        return x
+    end
+
+    a = one(x)
+    b = x
+    for j in 2:p
+        a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
+    end
+
+    b
+end
+
+"""
+    legendre_and_derivative(x, p::Integer)
+
+Evaluate the Legendre polynomial of degree `p` and its derivative at `x` using
+the three term recursion [Kopriva, Implementing Spectral Methods for PDEs,
+Algorithm 22].
+"""
+function legendre_and_derivative(x, p::Integer)
+    if p <= 0
+        return one(x), zero(x)
+    elseif p == 1
+        return x, one(x)
+    end
+
+    # coefficients for the polynomial...
+    a = one(x)
+    b = x
+    # ... and for the derivative
+    aa = zero(x)
+    bb = one(x)
+
+    for j in 2:p
+        a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
+        aa, bb = bb, aa + (2j-1)*a
+    end
+
+    b, bb
+end
+
+
+"""
+    gauss_legendre_nodes_and_weights(p, T=Float64::Type, tol=4*eps(T), maxit=100)
+
+Compute the Gauss-Legendre nodes and weights for polynomials of degree `p`
+using the scalar type `T`, tolerance `tol` and maximal number of Newton iterations
+`maxit` [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 23].
+"""
+function gauss_legendre_nodes_and_weights(p, T=Float64::Type, tol=4*eps(T), maxit=100)
+    if p <= 0
+        return T[0], T[2]
+    elseif p == 1
+        x0 = -1 / sqrt(T(3))
+        return [x0, -x0], T[1, 1]
+    end
+
+    nodes = Vector{T}(p+1)
+    weights = Vector{T}(p+1)
+    for j in 0:((p+1)÷2-1)
+        x = -cospi(T(2j+1)/(2p+2))
+        for k in 1:maxit
+            pol, der = legendre_and_derivative(x, p+1)
+            Δ = -pol / der
+            x = x + Δ
+            abs(Δ) <= tol*abs(x) && break
+        end
+        pol, der = legendre_and_derivative(x, p+1)
+        nodes[j+1] = x
+        nodes[p-j+1] = -x
+        weights[j+1] = weights[p-j+1] = 2 / ( (1-x^2)*der^2 )
+    end
+
+    if mod(p,2) == 0
+        pol, der = legendre_and_derivative(zero(T), p+1)
+        nodes[p÷2+1]   = 0
+        weights[p÷2+1] = 2 / der^2
+    end
+
+    return nodes, weights
+end
+
+
+# helper function [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 24]
+function q_and_L_evaluation(x, p::Integer)
+    a = one(x)
+    b = x
+    aa = zero(x)
+    bb = one(x)
+
+    for j in 2:p
+        a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
+        aa, bb = bb, aa + (2j-1)*a
+    end
+    pol = ( (2p+1)*x*b - p*a ) / (p+1)
+    der = aa + (2p+1)*b
+
+    pol-a, der-aa, b
+end
+
+"""
+    lobatto_legendre_nodes_and_weights(p, T=Float64::Type, tol=4*eps(T), maxit=100)
+
+Compute the Lobatto-Legendre nodes and weights for polynomials of degree `p`
+using the scalar type `T`, tolerance `tol` and maximal number of Newton iterations
+`maxit` [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 25].
+"""
+function lobatto_legendre_nodes_and_weights(p, T=Float64::Type, tol=4*eps(T), maxit=100)
+    if p <= 0
+        return T[0], T[2]
+    elseif p == 1
+        return T[-1, 1], T[1, 1]
+    end
+
+    nodes = Vector{T}(p+1)
+    weights = Vector{T}(p+1)
+
+    nodes[1] = -1
+    nodes[end] = 1
+    weights[1] = weights[end] = T(2) / (p*(p+1))
+
+    for j in 1:((p+1)÷2-1)
+        x = -cos( T(j+1//4)*π/p - 3/(8p*T(j+1//4)*π) )
+        for k in 1:maxit
+            pol, der, leg = q_and_L_evaluation(x, p)
+            Δ = -pol / der
+            x = x + Δ
+            abs(Δ) <= tol*abs(x) && break
+        end
+        pol, der, leg = q_and_L_evaluation(x, p)
+        nodes[j+1] = x
+        nodes[p-j+1] = -x
+        weights[j+1] = weights[p-j+1] = 2 / ( p*(p+1)*leg^2 )
+    end
+
+    if mod(p,2) == 0
+        pol, der, leg = q_and_L_evaluation(zero(T), p)
+        nodes[p÷2+1]   = 0
+        weights[p÷2+1] = 2 / ( p*(p+1)*leg^2 )
+    end
+
+    return nodes, weights
+end

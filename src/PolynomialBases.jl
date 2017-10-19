@@ -16,6 +16,7 @@ include("interpolation.jl")
 include("integration.jl")
 include("derivative.jl")
 include("nodal_bases.jl")
+include("legendre.jl")
 
 # types
 export LobattoLegendre, GaussLegendre
@@ -29,6 +30,9 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 
 # integration
 export integrate
+
+# Legender polynomials
+export legendre
 
 # other utilities
 export utility_matrices

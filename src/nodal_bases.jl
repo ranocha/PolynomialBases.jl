@@ -94,8 +94,10 @@ function LobattoLegendre(p::Int, T=Float64)
     if p == 0
         nodes = T[0]
         weights = T[2]
+    elseif T == Float64
+        nodes, weights = gausslobatto(p+1)
     else
-        nodes, weights = map(Vector{T}, gausslobatto(p+1))
+        nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
@@ -132,7 +134,11 @@ end
 Generate the `GaussLegendre` basis of degree `p` with scalar type `T`.
 """
 function GaussLegendre(p::Int, T=Float64)
-    nodes, weights = map(Vector{T}, gausslegendre(p+1))
+    if T == Float64
+        nodes, weights = gausslegendre(p+1)
+    else
+        nodes, weights = gauss_legendre_nodes_and_weights(p, T)
+    end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     GaussLegendre(nodes, weights, baryweights, D)
