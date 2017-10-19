@@ -18,8 +18,10 @@ for p in 1:20
     @test norm(w1 - w2) < 1.e-14
 end
 
-# derivative and mass matrices for Gauss Legendre nodes and weights
-for p in 0:11
+# Derivative and mass matrices for Gauss Legendre nodes and weights
+# NOTE: Only some tests for low polynomial degrees since the Vandermonde matrix
+#       becomes very ill-conditioned for higher values of p.
+for p in 0:8
     basis = GaussLegendre(p)
     V = legendre_vandermonde(basis)
 
