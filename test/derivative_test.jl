@@ -22,7 +22,7 @@ function tolerance(p, T=Float64)
         end
     elseif p <= 16
         if T==Float32
-            2.e-5
+            3.e-5
         else
             7.e-9
         end
