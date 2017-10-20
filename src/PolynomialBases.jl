@@ -17,9 +17,10 @@ include("integration.jl")
 include("derivative.jl")
 include("nodal_bases.jl")
 include("legendre.jl")
+include("jacobi.jl")
 
 # types
-export LobattoLegendre, GaussLegendre
+export LobattoLegendre, GaussLegendre, GaussJacobi
 
 # interpolation
 export interpolate, interpolate!, interpolation_matrix, interpolation_matrix!,
@@ -31,8 +32,9 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 # integration
 export integrate
 
-# Legender polynomials
-export legendre, legendre_vandermonde, legendre_D, legendre_M
+# Legendre and Jacobi polynomials
+export legendre, legendre_vandermonde, legendre_D, legendre_M,
+       jacobi, jacobi_vandermonde, jacobi_M
 
 # other utilities
 export utility_matrices

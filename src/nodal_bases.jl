@@ -148,3 +148,48 @@ function Base.show{T}(io::IO, basis::GaussLegendre{T})
   print(io, "GaussLegendre{", T, "}: Nodal Gauss Legendre basis of degree ",
             degree(basis))
 end
+
+
+"""
+    GaussJacobi{T<:Real}
+
+The nodal basis corresponding to Jacobi Gauss quadrature in [-1,1]
+with parameters `α`, `β` and scalar type `T`.
+"""
+struct GaussJacobi{T1<:Real, T<:Real} <: NodalBasis{Line}
+    α::T1
+    β::T1
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+
+    function GaussJacobi(α::T1, β::T1, nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where {T1,T}
+        @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
+        new{T1, T}(α, β, nodes, weights, baryweights, D)
+    end
+end
+
+"""
+    GaussJacobi(p::Int, α, β, T=Float64)
+
+Generate the `JacobiLegendre` basis of degree `p` with parameters `α`, `β` and
+scalar type `T`.
+"""
+function GaussJacobi(p::Int, α, β, T=Float64)
+    if T == Float64
+        nodes, weights = gaussjacobi(p+1, α, β)
+    else
+        nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
+    end
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    GaussJacobi(promote(α, β)..., nodes, weights, baryweights, D)
+end
+
+GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)
+
+function Base.show{T}(io::IO, basis::GaussJacobi{T})
+  print(io, "GaussJacobi{", T, "}: Nodal Gauss Jacobi basis of degree ",
+            degree(basis), " with parameters α=", basis.α, " and β = ", basis.β)
+end
