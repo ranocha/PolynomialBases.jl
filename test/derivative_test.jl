@@ -13,7 +13,11 @@ function tolerance(p, T=Float64)
     elseif p <= 10
         0.002
     elseif p <= 12
-        3.e-5
+        if T==Float32
+            5.e-5
+        else
+            3.e-5
+        end
     elseif p <= 14
         if T==Float32
             3.e-5

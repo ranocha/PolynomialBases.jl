@@ -23,5 +23,5 @@ for p in 0:8, α in linspace(-0.9, 4, 50), β in linspace(-0.9, 4, 50)
 
     P = eye(p+2, p+1)
 
-    @test norm(R * V2 * P / V1 - I) < 1.e-13
+    @test norm(R * V2 * P / V1 - I) < 2.e-13
 end
