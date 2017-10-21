@@ -18,6 +18,7 @@ include("derivative.jl")
 include("nodal_bases.jl")
 include("legendre.jl")
 include("jacobi.jl")
+include("hahn.jl")
 
 # types
 export LobattoLegendre, GaussLegendre, GaussJacobi
@@ -32,9 +33,12 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 # integration
 export integrate
 
-# Legendre and Jacobi polynomials
+# Continuous orthogonal polynomials: Legendre, Jacobi
 export legendre, legendre_vandermonde, legendre_D, legendre_M,
        jacobi, jacobi_vandermonde, jacobi_M
+
+# Discrete orthogonal polynomials: Hahn
+export hahn
 
 # other utilities
 export utility_matrices
