@@ -6,8 +6,9 @@
 [![codecov.io](http://codecov.io/github/ranocha/PolynomialBases.jl/coverage.svg?branch=master)](http://codecov.io/github/ranocha/PolynomialBases.jl?branch=master)
 
 A library of functions for polynomial bases used in spectral element methods using the quadrature rules from 
-[FastGaussQuadrature.jl](https://github.com/ajt60gaibb/FastGaussQuadrature.jl). The algorithms for interpolation
-and differentiation use barycentric weights as described in the book "Implementing Spectral Methods for PDEs" 
+[FastGaussQuadrature.jl](https://github.com/ajt60gaibb/FastGaussQuadrature.jl) for `Float64` and root finding 
+via the Newton algorithm for other scalar types (such as `BigFloat`). The algorithms for interpolation and
+differentiation use barycentric weights as described in the book "Implementing Spectral Methods for PDEs"
 by David Kopriva.
 
 A brief tutorial is given as 
