@@ -17,6 +17,7 @@ include("integration.jl")
 include("derivative.jl")
 include("nodal_bases.jl")
 include("legendre.jl")
+include("gegenbauer.jl")
 include("jacobi.jl")
 include("hermite.jl")
 include("hahn.jl")
@@ -34,8 +35,9 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 # integration
 export integrate
 
-# Continuous orthogonal polynomials: Legendre, Jacobi, Hermite
+# Continuous orthogonal polynomials: Legendre, Gegenbauer, Jacobi, Hermite
 export legendre, legendre_vandermonde, legendre_D, legendre_M,
+       gegenbauer,
        jacobi, jacobi_vandermonde, jacobi_M,
        hermite
 
