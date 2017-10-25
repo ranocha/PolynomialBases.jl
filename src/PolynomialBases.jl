@@ -21,6 +21,7 @@ include("legendre.jl")
 include("gegenbauer.jl")
 include("jacobi.jl")
 include("hermite.jl")
+include("laguerre.jl")
 include("hahn.jl")
 
 # types
@@ -43,7 +44,8 @@ export integrate
 export legendre, legendre_vandermonde, legendre_D, legendre_M,
        gegenbauer,
        jacobi, jacobi_vandermonde, jacobi_M,
-       hermite
+       hermite,
+       laguerre
 
 # Discrete orthogonal polynomials: Hahn
 export hahn

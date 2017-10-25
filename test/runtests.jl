@@ -11,6 +11,7 @@ tic()
 @time @testset "Gegenbauer" begin include("gegenbauer_test.jl") end
 @time @testset "Jacobi" begin include("jacobi_test.jl") end
 @time @testset "Hermite" begin include("hermite_test.jl") end
+@time @testset "Laguerre" begin include("laguerre_test.jl") end
 @time @testset "Hahn" begin include("hahn_test.jl") end
 @time @testset "Utilities" begin include("utilities_test.jl") end
 
