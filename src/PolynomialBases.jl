@@ -23,7 +23,7 @@ include("hermite.jl")
 include("hahn.jl")
 
 # types
-export LobattoLegendre, GaussLegendre, GaussJacobi
+export NodalBasis, LobattoLegendre, GaussLegendre, GaussJacobi
 
 # interpolation
 export interpolate, interpolate!, interpolation_matrix, interpolation_matrix!,
