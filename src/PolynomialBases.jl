@@ -12,6 +12,7 @@ abstract type AbstractBasis{Domain} end
 abstract type NodalBasis{Domain} <: AbstractBasis{Domain} end
 
 
+include("canonical_mappings.jl")
 include("interpolation.jl")
 include("integration.jl")
 include("derivative.jl")
@@ -24,6 +25,9 @@ include("hahn.jl")
 
 # types
 export NodalBasis, LobattoLegendre, GaussLegendre, GaussJacobi
+
+# mappings
+export map_to_canonical, map_to_canonical!, map_from_canonical, map_from_canonical!
 
 # interpolation
 export interpolate, interpolate!, interpolation_matrix, interpolation_matrix!,

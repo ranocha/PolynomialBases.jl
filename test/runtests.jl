@@ -3,6 +3,7 @@ using PolynomialBases
 
 tic()
 
+@time @testset "Canonical Mappings" begin include("canonical_mappings_test.jl") end
 @time @testset "Interpolation" begin include("interpolation_test.jl") end
 @time @testset "Integration" begin include("integration_test.jl") end
 @time @testset "Derivatives" begin include("derivative_test.jl") end
