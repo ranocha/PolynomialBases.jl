@@ -1,6 +1,7 @@
 module PolynomialBases
 
 
+using Requires
 using Parameters
 using FastGaussQuadrature
 
