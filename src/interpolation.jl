@@ -128,6 +128,41 @@ function interpolation_matrix!(mat, dest, src, baryweights)
     nothing
 end
 
+@require SymPy begin
+    function interpolation_matrix!(mat, dest, src::AbstractVector{SymPy.Sym}, baryweights)
+        @boundscheck begin
+            @assert length(src) == length(baryweights)
+            @assert size(mat,1) == length(dest)
+            @assert size(mat,2) == length(src)
+        end
+        @inbounds for k in 1:size(mat,1)
+            row_has_match = false
+            for j in 1:size(mat,2)
+                # no method matching rtoldefault(::Type{SymPy.Sym})
+                if dest[k] == src[j]
+                    row_has_match = true
+                    mat[k,j] = 1
+                end
+            end
+            if row_has_match == false
+                s = zero(eltype(mat))
+                for j in 1:size(mat,2)
+                    t = baryweights[j] / (dest[k] - src[j])
+                    mat[k,j] = t
+                    s = s + t
+                end
+                for j in 1:size(mat,2)
+                    mat[k,j] /= s
+                end
+            end
+        end
+        @inbounds for idx in eachindex(mat)
+            mat[idx] = SymPy.simplify(mat[idx])
+        end
+        nothing
+    end
+end
+
 function interpolation_matrix(dest, basis::NodalBasis)
     @unpack nodes, baryweights = basis
     interpolation_matrix(dest, nodes, baryweights)

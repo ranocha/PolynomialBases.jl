@@ -139,8 +139,8 @@ end
         else
             throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
         end
-        baryweights = barycentric_weights(nodes)
-        D = derivative_matrix(nodes, baryweights)
+        baryweights = SymPy.simplify.(barycentric_weights(nodes))
+        D = SymPy.simplify.(derivative_matrix(nodes, baryweights))
         LobattoLegendre(nodes, weights, baryweights, D)
     end
 end
@@ -217,8 +217,8 @@ end
         else
             throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
         end
-        baryweights = barycentric_weights(nodes)
-        D = derivative_matrix(nodes, baryweights)
+        baryweights = SymPy.simplify.(barycentric_weights(nodes))
+        D = SymPy.simplify.(derivative_matrix(nodes, baryweights))
         GaussLegendre(nodes, weights, baryweights, D)
     end
 end

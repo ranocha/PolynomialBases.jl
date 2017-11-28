@@ -22,3 +22,6 @@ for p in 0:4
     @test maximum(abs.( float.(basis_sympy.D) - basis_float.D, )) < 2tol
 end
 @test_throws ArgumentError GaussLegendre(5, SymPy.Sym)
+
+interpolation_matrix([-1, 1], LobattoLegendre(4, SymPy.Sym))
+interpolation_matrix([-1, 1], GaussLegendre(4, SymPy.Sym))
