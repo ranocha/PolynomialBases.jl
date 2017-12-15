@@ -14,6 +14,7 @@ tic()
 @time @testset "Laguerre" begin include("laguerre_test.jl") end
 @time @testset "Hahn" begin include("hahn_test.jl") end
 @time @testset "Utilities" begin include("utilities_test.jl") end
-@time @testset "Symbolic Bases" begin include("sympy_test.jl") end
+@time @testset "Symbolic Bases (SymPy)" begin include("sympy_test.jl") end
+@time @testset "Symbolic Bases (SymEngine)" begin include("symengine_test.jl") end
 
 toc()

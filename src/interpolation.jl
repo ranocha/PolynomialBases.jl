@@ -163,6 +163,41 @@ end
     end
 end
 
+@require SymEngine begin
+    function interpolation_matrix!(mat, dest, src::AbstractVector{SymEngine.Basic}, baryweights)
+        @boundscheck begin
+            @assert length(src) == length(baryweights)
+            @assert size(mat,1) == length(dest)
+            @assert size(mat,2) == length(src)
+        end
+        @inbounds for k in 1:size(mat,1)
+            row_has_match = false
+            for j in 1:size(mat,2)
+                # no method matching rtoldefault(::Type{SymEngine.Basic})
+                if dest[k] == src[j]
+                    row_has_match = true
+                    mat[k,j] = 1
+                end
+            end
+            if row_has_match == false
+                s = zero(eltype(mat))
+                for j in 1:size(mat,2)
+                    t = baryweights[j] / (dest[k] - src[j])
+                    mat[k,j] = t
+                    s = s + t
+                end
+                for j in 1:size(mat,2)
+                    mat[k,j] /= s
+                end
+            end
+        end
+        @inbounds for idx in eachindex(mat)
+            mat[idx] = SymEngine.expand(mat[idx])
+        end
+        nothing
+    end
+end
+
 function interpolation_matrix(dest, basis::NodalBasis)
     @unpack nodes, baryweights = basis
     interpolation_matrix(dest, nodes, baryweights)
