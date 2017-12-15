@@ -162,10 +162,12 @@ struct GaussLegendre{T} <: NodalBasis{Line}
     weights::Vector{T}
     baryweights::Vector{T}
     D::Matrix{T}
+    interp_left::Vector{T}
+    interp_right::Vector{T}
 
-    function GaussLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where T
-        @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
-        new{T}(nodes, weights, baryweights, D)
+    function GaussLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where T
+        @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
+        new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
     end
 end
 
@@ -182,7 +184,8 @@ function GaussLegendre(p::Int, T=Float64)
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
-    GaussLegendre(nodes, weights, baryweights, D)
+    R = interpolation_matrix(T[-1, 1], nodes, baryweights)
+    GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
 end
 
 @require SymPy begin

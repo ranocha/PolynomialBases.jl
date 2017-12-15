@@ -67,6 +67,16 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     end
 end
 
+# compare direct interpolation and interpolation vectors for GaussLegendre
+for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 1:10, T in (Float32, Float64)
+    basis = GaussLegendre(p, T)
+    u = ufc.(basis.nodes)
+    x = T[-1, 1]
+    u1 = interpolate(x, u, basis)
+    u2 = similar(u1); u2[1] = dot(basis.interp_left, u); u2[2] = dot(basis.interp_right, u)
+    @test norm(u1 - u2) < 5*eps(T)
+end
+
 # change of bases
 for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
     basis1 = LobattoLegendre(p, T)
