@@ -1,7 +1,7 @@
 using Base.Test, PolynomialBases
 import SymEngine
 
-tol = 5.e-15
+tol = 5.e-14
 
 for p in 0:6
     basis_symbo = LobattoLegendre(p, SymEngine.Basic)
@@ -9,7 +9,7 @@ for p in 0:6
     @test maximum(abs.( float.(basis_symbo.nodes) - basis_float.nodes )) < tol
     @test maximum(abs.( float.(basis_symbo.weights) - basis_float.weights )) < tol
     @test maximum(abs.( float.(basis_symbo.baryweights) - basis_float.baryweights )) < tol
-    @test maximum(abs.( float.(basis_symbo.D) - basis_float.D, )) < 3tol
+    @test maximum(abs.( float.(basis_symbo.D) - basis_float.D, )) < tol
 end
 @test_throws ArgumentError LobattoLegendre(7, SymEngine.Basic)
 
@@ -19,7 +19,7 @@ for p in 0:4
     @test maximum(abs.( float.(basis_symbo.nodes) - basis_float.nodes )) < tol
     @test maximum(abs.( float.(basis_symbo.weights) - basis_float.weights )) < tol
     @test maximum(abs.( float.(basis_symbo.baryweights) - basis_float.baryweights )) < tol
-    @test maximum(abs.( float.(basis_symbo.D) - basis_float.D, )) < 2tol
+    @test maximum(abs.( float.(basis_symbo.D) - basis_float.D, )) < tol
 end
 @test_throws ArgumentError GaussLegendre(5, SymEngine.Basic)
 
