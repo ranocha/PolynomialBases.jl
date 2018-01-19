@@ -117,7 +117,7 @@ basis to the nodal Lagrange basis associated with `nodes`.
 function jacobi_vandermonde(nodes::AbstractVector, α, β)
     T = eltype(nodes)
     pp1 = length(nodes)
-    V = zeros(T, pp1, pp1)
+    V = Array{T}(pp1, pp1)
     for j in 1:pp1, (i,x) in enumerate(nodes)
       V[i, j] = jacobi(x, j-1, α, β)
     end

@@ -94,7 +94,7 @@ function interpolation_matrix(dest, src, baryweights)
         @assert length(src) == length(baryweights)
     end
     T = promote_type(eltype(dest), eltype(src), eltype(baryweights))
-    mat = zeros(T, length(dest), length(src))
+    mat = Array{T}(length(dest), length(src))
     @inbounds interpolation_matrix!(mat, dest, src, baryweights)
     mat
 end
@@ -105,6 +105,7 @@ function interpolation_matrix!(mat, dest, src, baryweights)
         @assert size(mat,1) == length(dest)
         @assert size(mat,2) == length(src)
     end
+    fill!(mat, zero(eltype(mat)))
     @inbounds for k in 1:size(mat,1)
         row_has_match = false
         for j in 1:size(mat,2)
@@ -135,6 +136,7 @@ end
             @assert size(mat,1) == length(dest)
             @assert size(mat,2) == length(src)
         end
+        fill!(mat, zero(eltype(mat)))
         @inbounds for k in 1:size(mat,1)
             row_has_match = false
             for j in 1:size(mat,2)
@@ -170,6 +172,7 @@ end
             @assert size(mat,1) == length(dest)
             @assert size(mat,2) == length(src)
         end
+        fill!(mat, zero(eltype(mat)))
         @inbounds for k in 1:size(mat,1)
             row_has_match = false
             for j in 1:size(mat,2)

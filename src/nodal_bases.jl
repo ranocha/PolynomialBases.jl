@@ -50,7 +50,7 @@ nodal basis `basis`.
 function compute_coefficients(u, basis::NodalBasis{Line})
     xmin = first(basis.nodes)
     xmax = last(basis.nodes)
-    uval = zeros(typeof(u((xmin+xmax)/2)), length(basis.nodes))
+    uval = Array{typeof(u((xmin+xmax)/2))}(length(basis.nodes))
     compute_coefficients!(uval, u, basis)
     uval
 end

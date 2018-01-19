@@ -165,7 +165,7 @@ basis to the nodal Lagrange basis associated with `nodes`.
 function legendre_vandermonde(nodes::AbstractVector)
     T = eltype(nodes)
     pp1 = length(nodes)
-    V = zeros(T, pp1, pp1)
+    V = Array{T}(pp1, pp1)
     for j in 1:pp1, (i,x) in enumerate(nodes)
       V[i, j] = legendre(x, j-1)
     end
@@ -193,7 +193,8 @@ Computes the derivative matrix in the modal Legendre basis up to degree `p`
 using the scalar type `T`.
 """
 function legendre_D(p, T=Float64)
-  D = zeros(T, p+1, p+1)
+  D = Array{T}(p+1, p+1)
+  fill!(D, zero(T))
   if p >= 1
     D[1, 2] = 1
   end
