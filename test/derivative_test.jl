@@ -41,7 +41,7 @@ end
 
 # regression test
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
-    println("  ", basis_type(1))
+    println(DevNull, "  ", basis_type(1))
     for p in 5:20, T in (Float32, Float64)
         basis = basis_type(p, T)
         u = ufunc.(basis.nodes)
