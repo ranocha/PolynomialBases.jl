@@ -2,6 +2,7 @@ __precompile__()
 
 module PolynomialBases
 
+using ArgCheck
 using Requires
 using Parameters
 using FastGaussQuadrature
@@ -38,6 +39,10 @@ export map_to_canonical, map_to_canonical!, map_from_canonical, map_from_canonic
 ## interpolation
 export interpolate, interpolate!, interpolation_matrix, interpolation_matrix!,
         change_basis, change_basis!
+
+## evaluation of coefficients
+export compute_coefficients, compute_coefficients!,
+        evaluate_coefficients, evaluate_coefficients!
 
 ## derivative
 export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!

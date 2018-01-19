@@ -42,6 +42,66 @@ end
 
 
 """
+    compute_coefficients(u, basis::NodalBasis{Line})
+
+Compute the nodal values of the function `u` at the nodes corresponding to the
+nodal basis `basis`.
+"""
+function compute_coefficients(u, basis::NodalBasis{Line})
+    xmin = first(basis.nodes)
+    xmax = last(basis.nodes)
+    uval = zeros(typeof(u((xmin+xmax)/2)), length(basis.nodes))
+    compute_coefficients!(uval, u, basis)
+    uval
+end
+
+"""
+    compute_coefficients!(uval::AbstractVector, u, basis::NodalBasis{Line})
+
+Compute the nodal values of the function `u` at the nodes corresponding to the
+nodal basis `basis` and store the result in `uval`.
+"""
+function compute_coefficients!(uval::AbstractVector, u, basis::NodalBasis{Line})
+    uval .= u.(basis.nodes)
+    nothing
+end
+
+
+"""
+    evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
+
+Evaluate the coefficients `u` of the nodal basis `basis` at `npoints` equally
+spaced nodes. Returns `xplot, uplot`, where `xplot` contains the equally spaced
+nodes and `uplot` the corresponding values of `u`.
+"""
+@noinline function evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
+    xplot = Array{eltype(basis.nodes)}(npoints)
+    uplot = Array{eltype(u)}(npoints)
+
+    evaluate_coefficients!(xplot, uplot, u, basis)
+end
+
+"""
+    evaluate_coefficients!(xplot, uplot, u, basis::NodalBasis{Line})
+
+Evaluate the coefficients `u` of the nodal basis `basis` at `npoints` equally
+spaced nodes and store the result in `xplot, uplot`. Returns `xplot, uplot`,
+where `xplot` contains the equally spaced nodes and `uplot` the corresponding
+values of `u`.
+"""
+function evaluate_coefficients!(xplot, uplot, u, basis::NodalBasis{Line})
+    @argcheck length(uplot) == length(xplot)
+    npoints = length(xplot)
+    T = eltype(xplot)
+
+    xplot .= linspace(T(-1), T(1), npoints)
+    interpolate!(uplot, xplot, u, basis)
+
+    xplot, uplot
+end
+
+
+"""
     utility_matrices(basis::NodalBasis{Line})
 
 Return the matrices

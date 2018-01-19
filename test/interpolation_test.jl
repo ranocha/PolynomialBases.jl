@@ -49,9 +49,14 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
         basis = basis_type(p, T)
         u = ufc.(basis.nodes)
+        u2 = compute_coefficients(ufc, basis)
+        @test maximum(abs, u-u2) < 10*eps(T)
         xplot = linspace(-1, 1, 100)
         uplot = interpolate(xplot, u, basis)
         @test norm(ufc.(xplot) - uplot, Inf) < tolerance(p, ufc)
+        xplot2, uplot2 = evaluate_coefficients(u, basis, length(xplot))
+        @test maximum(abs, xplot-xplot2) < 10*eps(T)
+        @test maximum(abs, uplot-uplot2) < 10*eps(T)
     end
 end
 
