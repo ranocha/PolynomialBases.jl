@@ -1,8 +1,11 @@
 using Base.Test, PolynomialBases
+import StaticArrays
 
 ufunc₁(x) = sinpi(x)
 ufunc₂(x) = exp(sinpi(x))
 ufunc₃(x) = cospi(x^2)^5
+
+ufunc_svector(x) = StaticArrays.SVector(ufunc₁(x), ufunc₃(x))
 
 function tolerance(p, ufunc::typeof(ufunc₁))
     if p <= 4
@@ -97,4 +100,11 @@ for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
 
     @test norm(interpolate(xplot,u1,basis1) - interpolate(xplot,u12,basis1), Inf) < tolerance(p, ufc)
     @test norm(interpolate(xplot,u2,basis2) - interpolate(xplot,u21,basis2), Inf) < tolerance(p, ufc)
+end
+
+# interpolate SVector
+for T in (Float32,Float64)
+    basis = GaussLegendre(5, T)
+    u = compute_coefficients(ufunc_svector, basis)
+    @inferred evaluate_coefficients(u, basis)
 end
