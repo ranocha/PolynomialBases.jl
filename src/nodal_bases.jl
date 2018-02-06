@@ -7,14 +7,14 @@ Base.@pure degree(basis::NodalBasis{Line}) = length(basis.nodes)-1
 
 
 """
-    change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
-                                         values, src_basis::NodalBasis{Domain})
+    function change_basis(dest_basis::NodalBasis{Domain},
+                          values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
 
 Perform the change of basis for the coefficients `values` from `src_basis` to
 `dest_basis`.
 """
-function change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
-                                                values, src_basis::NodalBasis{Domain})
+function change_basis(dest_basis::NodalBasis{Domain},
+                      values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
     @boundscheck begin
         @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
     end
@@ -24,14 +24,14 @@ function change_basis{Domain<:AbstractDomain}(dest_basis::NodalBasis{Domain},
 end
 
 """
-    change_basis!{Domain<:AbstractDomain}(ret, dest_basis::NodalBasis{Domain},
-                                          values, src_basis::NodalBasis{Domain})
+    change_basis!(ret, dest_basis::NodalBasis{Domain},
+                  values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
 
 Perform the change of basis for the coefficients `values` from `src_basis` to
 `dest_basis` and store the resulting coefficients in `ret`.
 """
-function change_basis!{Domain<:AbstractDomain}(ret, dest_basis::NodalBasis{Domain},
-                                               values, src_basis::NodalBasis{Domain})
+function change_basis!(ret, dest_basis::NodalBasis{Domain},
+                       values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
     @boundscheck begin
         @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
         @assert length(values) == length(ret)
@@ -128,7 +128,7 @@ end
 
 
 """
-    LobattoLegendre{T<:Real}
+    LobattoLegendre{T}
 
 The nodal basis corresponding to Legendre Gauss Lobatto quadrature in [-1,1]
 with scalar type `T`.
@@ -139,7 +139,7 @@ struct LobattoLegendre{T} <: NodalBasis{Line}
     baryweights::Vector{T}
     D::Matrix{T}
 
-    function LobattoLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where T
+    function LobattoLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where {T}
         @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
         new{T}(nodes, weights, baryweights, D)
     end
@@ -253,7 +253,7 @@ end
 
 
 """
-    GaussLegendre{T<:Real}
+    GaussLegendre{T}
 
 The nodal basis corresponding to Legendre Gauss quadrature in [-1,1]
 with scalar type `T`.
@@ -266,7 +266,7 @@ struct GaussLegendre{T} <: NodalBasis{Line}
     interp_left::Vector{T}
     interp_right::Vector{T}
 
-    function GaussLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where T
+    function GaussLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
         @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
         new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
     end
@@ -367,7 +367,7 @@ end
     end
 end
 
-function Base.show{T}(io::IO, basis::GaussLegendre{T})
+function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
   print(io, "GaussLegendre{", T, "}: Nodal Gauss Legendre basis of degree ",
             degree(basis))
 end
@@ -412,7 +412,7 @@ end
 
 GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)
 
-function Base.show{T}(io::IO, basis::GaussJacobi{T})
+function Base.show(io::IO, basis::GaussJacobi{T}) where {T}
   print(io, "GaussJacobi{", T, "}: Nodal Gauss Jacobi basis of degree ",
             degree(basis), " with parameters α=", basis.α, " and β = ", basis.β)
 end

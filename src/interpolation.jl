@@ -39,9 +39,8 @@ function interpolate(x::Real, values, nodes, baryweights)
     @boundscheck begin
         @assert size(values) == size(nodes) == size(baryweights)
     end
-    T = typeof(first(baryweights)*first(values)/first(nodes)*one(x))
-    num = zero(T)
-    den = zero(T)
+    num = zero(first(baryweights)*first(values)/first(nodes)*one(x))
+    den = zero(first(baryweights)/first(nodes)*one(x))
     @inbounds for idx in eachindex(nodes)
         xval = nodes[idx]
         if xval ≈ x
@@ -51,7 +50,7 @@ function interpolate(x::Real, values, nodes, baryweights)
         num += t*values[idx]
         den += t
     end
-    num ./ den
+    num / den
 end
 
 function interpolate(x::AbstractVector, values, nodes, baryweights)

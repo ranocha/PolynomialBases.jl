@@ -50,14 +50,14 @@ export derivative_at, derivative_at!, derivative_matrix, derivative_matrix!
 ## integration
 export integrate
 
-## Continuous orthogonal polynomials: Legendre, Gegenbauer, Jacobi, Hermite
+## Continuous orthogonal polynomials
 export legendre, legendre_vandermonde, legendre_D, legendre_M,
        gegenbauer,
-       jacobi, jacobi_vandermonde, jacobi_M,
+       jacobi, jacobi_vandermonde,
        hermite,
        laguerre
 
-## Discrete orthogonal polynomials: Hahn
+## Discrete orthogonal polynomials
 export hahn
 
 ## other utilities
