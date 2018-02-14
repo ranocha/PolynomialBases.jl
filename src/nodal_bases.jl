@@ -445,7 +445,7 @@ function ClosedNewtonCotes(p::Int, T=Float64)
     if p == 0
         nodes = T[0]
         weights = T[2]
-    elseif 1 <= p <= 6
+    elseif 1 <= p <= 7
         nodes = T.(-1:2//p:1)
         if p == 1
             weights = T[1, 1]
