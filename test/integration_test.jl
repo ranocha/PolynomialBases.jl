@@ -39,6 +39,7 @@ function tolerance(p, T=Float64)
 end
 
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
+    basis_type <: ClosedNewtonCotes && continue
     for p in 3:15, T in (Float32, Float64)
         basis = basis_type(p, T)
         u = ufunc.(basis.nodes)

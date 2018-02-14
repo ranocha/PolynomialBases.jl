@@ -42,6 +42,7 @@ end
 # regression test
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     println(DevNull, "  ", basis_type(1))
+    basis_type <: ClosedNewtonCotes && continue
     for p in 5:20, T in (Float32, Float64)
         basis = basis_type(p, T)
         u = ufunc.(basis.nodes)
@@ -52,7 +53,12 @@ end
 # compare direct derivative evaluation and matrix
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     for p in 0:15
-        basis = basis_type(p)
+        basis = try
+            basis_type(p)
+        catch m
+            isa(m, DomainError) && continue
+            throw(m)
+        end
         u = ufunc.(basis.nodes)
         xplot = linspace(-1, 1, 100)
         u1 = derivative_at(xplot, u, basis)
@@ -61,7 +67,12 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     end
 
     for p in 0:15
-        basis = basis_type(p, Float32)
+        basis = try
+            basis_type(p, Float32)
+        catch m
+            isa(m, DomainError) && continue
+            throw(m)
+        end
         u = ufunc.(basis.nodes)
         xplot = linspace(-1, 1, 100)
         u1 = derivative_at(xplot, u, basis)

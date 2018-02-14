@@ -31,7 +31,7 @@ include("hahn.jl")
 
 # export
 ## types
-export NodalBasis, LobattoLegendre, GaussLegendre, GaussJacobi
+export NodalBasis, LobattoLegendre, GaussLegendre, GaussJacobi, ClosedNewtonCotes
 
 ## mappings
 export map_to_canonical, map_to_canonical!, map_from_canonical, map_from_canonical!

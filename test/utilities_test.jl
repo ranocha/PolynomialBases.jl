@@ -3,6 +3,7 @@ using Base.Test, PolynomialBases
 ufunc(x) = sinpi(x)
 
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
+    basis_type <: ClosedNewtonCotes && continue
     for p in 1:5
         basis = basis_type(p)
         u = ufunc.(basis.nodes)

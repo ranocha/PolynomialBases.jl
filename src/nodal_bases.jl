@@ -140,7 +140,7 @@ struct LobattoLegendre{T} <: NodalBasis{Line}
     D::Matrix{T}
 
     function LobattoLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where {T}
-        @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
         new{T}(nodes, weights, baryweights, D)
     end
 end
@@ -267,7 +267,7 @@ struct GaussLegendre{T} <: NodalBasis{Line}
     interp_right::Vector{T}
 
     function GaussLegendre(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
-        @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
         new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
     end
 end
@@ -388,7 +388,7 @@ struct GaussJacobi{T1<:Real, T<:Real} <: NodalBasis{Line}
     D::Matrix{T}
 
     function GaussJacobi(α::T1, β::T1, nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where {T1,T}
-        @assert length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
         new{T1, T}(α, β, nodes, weights, baryweights, D)
     end
 end
@@ -415,4 +415,57 @@ GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)
 function Base.show(io::IO, basis::GaussJacobi{T}) where {T}
   print(io, "GaussJacobi{", T, "}: Nodal Gauss Jacobi basis of degree ",
             degree(basis), " with parameters α=", basis.α, " and β = ", basis.β)
+end
+
+
+"""
+    ClosedNewtonCotes{T}
+
+The nodal basis corresponding to the closed Newton Cotes quadrature in [-1,1]
+with scalar type `T`.
+"""
+struct ClosedNewtonCotes{T} <: NodalBasis{Line}
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+
+    function ClosedNewtonCotes(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where {T}
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
+        new{T}(nodes, weights, baryweights, D)
+    end
+end
+
+"""
+    ClosedNewtonCotes(p::Int, T=Float64)
+
+Generate the `ClosedNewtonCotes` basis of degree `p` with scalar type `T`.
+"""
+function ClosedNewtonCotes(p::Int, T=Float64)
+    if p == 0
+        nodes = T[0]
+        weights = T[2]
+    elseif 1 <= p <= 6
+        nodes = T.(-1:2//p:1)
+        if p == 1
+            weights = T[1, 1]
+        elseif p == 2
+            weights = T[1//3, 4//3, 1//3]
+        elseif p == 3
+            weights = T[2//8, 6//8, 6//8, 6//8]
+        elseif p == 4
+            weights = T[14//90, 32//45, 4//15, 32//45, 14//90]
+        elseif p == 5
+            weights = T[38//288, 50//96, 50//144, 50//144, 50//96, 38//288]
+        elseif p == 6
+            weights = T[82//840, 18//35, 18//280, 68//105, 18//280, 18//35, 82//840]
+        elseif p == 7
+            weights = T[2*751//17280, 2*3577//17280, 98//640, 2*2989//17280, 2*2989//17280, 98//640, 2*3577//17280, 2*751//17280]
+        end
+    else
+        throw(DomainError("Only implemented for p <= 6 due to nonnegative weights."))
+    end
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    ClosedNewtonCotes(nodes, weights, baryweights, D)
 end

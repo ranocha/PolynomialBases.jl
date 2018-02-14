@@ -4,7 +4,12 @@ using Base.Test, PolynomialBases
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     println(DevNull, "  ", basis_type(1))
     for p in 0:20, T in (Float32, Float64)
-        basis = basis_type(p, T)
+        basis = try
+            basis_type(p, T)
+        catch m
+            isa(m, DomainError) && continue
+            throw(m)
+        end
         xmin, xmax = 0.25, 0.9
         x = similar(basis.nodes)
         ξ = similar(x)

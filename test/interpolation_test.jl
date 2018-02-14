@@ -50,7 +50,12 @@ end
 # some regression tests
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
-        basis = basis_type(p, T)
+        basis = try
+            basis_type(p, T)
+        catch m
+            isa(m, DomainError) && continue
+            throw(m)
+        end
         u = ufc.(basis.nodes)
         u2 = compute_coefficients(ufc, basis)
         @test maximum(abs, u-u2) < 10*eps(T)
@@ -66,7 +71,12 @@ end
 # compare direct interpolation and matrix
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
-        basis = basis_type(p, T)
+        basis = try
+            basis_type(p, T)
+        catch m
+            isa(m, DomainError) && continue
+            throw(m)
+        end
         u = ufc.(basis.nodes)
         xplot = linspace(-1, 1, 100)
         u1 = interpolate(xplot, u, basis)
