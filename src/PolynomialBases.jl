@@ -61,7 +61,7 @@ export legendre, legendre_vandermonde, legendre_D, legendre_M,
 export hahn
 
 ## other utilities
-export utility_matrices
+export utility_matrices, includes_boundaries
 
 
 end # module

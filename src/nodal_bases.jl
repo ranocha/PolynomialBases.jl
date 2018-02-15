@@ -251,6 +251,8 @@ function Base.show{T}(io::IO, basis::LobattoLegendre{T})
             degree(basis))
 end
 
+@inline includes_boundaries(basis::LobattoLegendre) = Val{true}()
+
 
 """
     GaussLegendre{T}
@@ -372,6 +374,8 @@ function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
             degree(basis))
 end
 
+@inline includes_boundaries(basis::GaussLegendre) = Val{false}()
+
 
 """
     GaussJacobi{T<:Real}
@@ -416,6 +420,8 @@ function Base.show(io::IO, basis::GaussJacobi{T}) where {T}
   print(io, "GaussJacobi{", T, "}: Nodal Gauss Jacobi basis of degree ",
             degree(basis), " with parameters α=", basis.α, " and β = ", basis.β)
 end
+
+@inline includes_boundaries(basis::GaussJacobi) = Val{false}()
 
 
 """
@@ -469,3 +475,5 @@ function ClosedNewtonCotes(p::Int, T=Float64)
     D = derivative_matrix(nodes, baryweights)
     ClosedNewtonCotes(nodes, weights, baryweights, D)
 end
+
+@inline includes_boundaries(basis::ClosedNewtonCotes) = Val{true}()
