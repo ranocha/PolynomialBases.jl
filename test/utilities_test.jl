@@ -22,9 +22,9 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
             @test !(Ru[end] ≈ u[end])
         end
 
-        basis_type <: ClosedNewtonCotes && continue
-
         # SBP property
-        @test norm(M*D + D'*M - R'*B*R) < 1.e-14
+        if satisfies_sbp(basis) == Val{true}()
+            @test norm(M*D + D'*M - R'*B*R) < 1.e-14
+        end
     end
 end

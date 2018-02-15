@@ -6,6 +6,7 @@ using ArgCheck
 using Requires
 using Parameters
 using FastGaussQuadrature
+using FastTransforms: clenshawcurtis
 
 
 # types
@@ -31,7 +32,8 @@ include("hahn.jl")
 
 # export
 ## types
-export NodalBasis, LobattoLegendre, GaussLegendre, GaussJacobi, ClosedNewtonCotes
+export NodalBasis, LobattoLegendre, GaussLegendre, GaussJacobi, ClosedNewtonCotes,
+        ClenshawCurtis
 
 ## mappings
 export map_to_canonical, map_to_canonical!, map_from_canonical, map_from_canonical!
@@ -61,7 +63,7 @@ export legendre, legendre_vandermonde, legendre_D, legendre_M,
 export hahn
 
 ## other utilities
-export utility_matrices, includes_boundaries
+export utility_matrices, includes_boundaries, satisfies_sbp
 
 
 end # module

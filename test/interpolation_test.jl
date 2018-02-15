@@ -15,7 +15,7 @@ function tolerance(p, ufunc::typeof(ufunc₁))
     elseif p <= 8
         2.e-3
     elseif p <= 10
-        5.e-5
+        9.5e-4
     else
         2.e-7
     end

@@ -3,4 +3,5 @@ julia 0.6
 ArgCheck
 Requires
 Parameters
+FastTransforms
 FastGaussQuadrature

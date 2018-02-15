@@ -6,7 +6,7 @@ function tolerance(p, T=Float64)
     if p <= 2
         1.
     elseif p <= 4
-        0.65
+        0.78
     elseif p <= 6
         0.02
     elseif p <= 8
@@ -39,7 +39,7 @@ function tolerance(p, T=Float64)
 end
 
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
-    basis_type <: ClosedNewtonCotes && continue
+    basis_type <: Union{ClosedNewtonCotes,ClenshawCurtis} && continue
     for p in 3:15, T in (Float32, Float64)
         basis = basis_type(p, T)
         u = ufunc.(basis.nodes)

@@ -253,6 +253,8 @@ end
 
 @inline includes_boundaries(basis::LobattoLegendre) = Val{true}()
 
+@inline satisfies_sbp(basis::LobattoLegendre) = Val{true}()
+
 
 """
     GaussLegendre{T}
@@ -376,6 +378,8 @@ end
 
 @inline includes_boundaries(basis::GaussLegendre) = Val{false}()
 
+@inline satisfies_sbp(basis::GaussLegendre) = Val{true}()
+
 
 """
     GaussJacobi{T<:Real}
@@ -422,6 +426,8 @@ function Base.show(io::IO, basis::GaussJacobi{T}) where {T}
 end
 
 @inline includes_boundaries(basis::GaussJacobi) = Val{false}()
+
+@inline satisfies_sbp(basis::GaussJacobi) = Val{false}()
 
 
 """
@@ -477,3 +483,45 @@ function ClosedNewtonCotes(p::Int, T=Float64)
 end
 
 @inline includes_boundaries(basis::ClosedNewtonCotes) = Val{true}()
+
+@inline satisfies_sbp(basis::ClosedNewtonCotes) = Val{false}()
+
+
+"""
+    ClenshawCurtis{T}
+
+The nodal basis corresponding to the Clenshaw Curtis quadrature in [-1,1] with
+scalar type `T`.
+"""
+struct ClenshawCurtis{T} <: NodalBasis{Line}
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+
+    function ClenshawCurtis(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}) where {T}
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2)
+        new{T}(nodes, weights, baryweights, D)
+    end
+end
+
+"""
+    ClenshawCurtis(p::Int, T=Float64)
+
+Generate the `ClenshawCurtis` basis of degree `p` with scalar type `T`.
+"""
+function ClenshawCurtis(p::Int, T=Float64)
+    if p == 0
+        nodes = T[0]
+        weights = T[2]
+    else
+        nodes, weights = clenshawcurtis(p+1, zero(T), zero(T))
+    end
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    ClenshawCurtis(nodes, weights, baryweights, D)
+end
+
+@inline includes_boundaries(basis::ClenshawCurtis) = Val{true}()
+
+@inline satisfies_sbp(basis::ClenshawCurtis) = Val{false}()
