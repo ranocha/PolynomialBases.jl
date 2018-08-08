@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
 
 ufunc(x) = sinpi(x)
 
@@ -24,7 +24,7 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
 
         # SBP property
         if satisfies_sbp(basis) == Val{true}()
-            @test norm(M*D + D'*M - R'*B*R) < 1.e-14
+            @test M*D + D'*M ≈ R'*B*R
         end
     end
 end

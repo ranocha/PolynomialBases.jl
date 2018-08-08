@@ -4,4 +4,5 @@ ArgCheck
 Requires
 Parameters
 FastTransforms
+SpecialFunctions
 FastGaussQuadrature

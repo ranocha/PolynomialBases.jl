@@ -6,7 +6,7 @@ Compute the barycentric weights corresponding to the nodes `x`.
 [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 30].
 """
 function barycentric_weights(x::AbstractVector)
-    w = ones(x)
+    w = fill!(similar(x), one(eltype(x)))
     @inbounds barycentric_weights!(w, x)
     w
 end
@@ -93,7 +93,7 @@ function interpolation_matrix(dest, src, baryweights)
         @assert length(src) == length(baryweights)
     end
     T = promote_type(eltype(dest), eltype(src), eltype(baryweights))
-    mat = Array{T}(length(dest), length(src))
+    mat = Array{T}(undef, length(dest), length(src))
     @inbounds interpolation_matrix!(mat, dest, src, baryweights)
     mat
 end
@@ -128,77 +128,7 @@ function interpolation_matrix!(mat, dest, src, baryweights)
     nothing
 end
 
-@require SymPy begin
-    function interpolation_matrix!(mat, dest, src::AbstractVector{SymPy.Sym}, baryweights)
-        @boundscheck begin
-            @assert length(src) == length(baryweights)
-            @assert size(mat,1) == length(dest)
-            @assert size(mat,2) == length(src)
-        end
-        fill!(mat, zero(eltype(mat)))
-        @inbounds for k in 1:size(mat,1)
-            row_has_match = false
-            for j in 1:size(mat,2)
-                # no method matching rtoldefault(::Type{SymPy.Sym})
-                if dest[k] == src[j]
-                    row_has_match = true
-                    mat[k,j] = 1
-                end
-            end
-            if row_has_match == false
-                s = zero(eltype(mat))
-                for j in 1:size(mat,2)
-                    t = baryweights[j] / (dest[k] - src[j])
-                    mat[k,j] = t
-                    s = s + t
-                end
-                for j in 1:size(mat,2)
-                    mat[k,j] /= s
-                end
-            end
-        end
-        @inbounds for idx in eachindex(mat)
-            mat[idx] = SymPy.simplify(mat[idx])
-        end
-        nothing
-    end
-end
-
-@require SymEngine begin
-    function interpolation_matrix!(mat, dest, src::AbstractVector{SymEngine.Basic}, baryweights)
-        @boundscheck begin
-            @assert length(src) == length(baryweights)
-            @assert size(mat,1) == length(dest)
-            @assert size(mat,2) == length(src)
-        end
-        fill!(mat, zero(eltype(mat)))
-        @inbounds for k in 1:size(mat,1)
-            row_has_match = false
-            for j in 1:size(mat,2)
-                # no method matching rtoldefault(::Type{SymEngine.Basic})
-                if dest[k] == src[j]
-                    row_has_match = true
-                    mat[k,j] = 1
-                end
-            end
-            if row_has_match == false
-                s = zero(eltype(mat))
-                for j in 1:size(mat,2)
-                    t = baryweights[j] / (dest[k] - src[j])
-                    mat[k,j] = t
-                    s = s + t
-                end
-                for j in 1:size(mat,2)
-                    mat[k,j] /= s
-                end
-            end
-        end
-        @inbounds for idx in eachindex(mat)
-            mat[idx] = SymEngine.expand(mat[idx])
-        end
-        nothing
-    end
-end
+# special methods of interpolation_matrix for SymPy and SymEngine are in __init__
 
 function interpolation_matrix(dest, basis::NodalBasis)
     @unpack nodes, baryweights = basis

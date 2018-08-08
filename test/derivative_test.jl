@@ -1,4 +1,5 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
+using LinearAlgebra
 
 ufunc(x) = sinpi(x)
 uprim(x) = π*cospi(x)
@@ -41,12 +42,12 @@ end
 
 # regression test
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
-    println(DevNull, "  ", basis_type(1))
+    println(devnull, "  ", basis_type(1))
     basis_type <: ClosedNewtonCotes && continue
     for p in 5:20, T in (Float32, Float64)
         basis = basis_type(p, T)
         u = ufunc.(basis.nodes)
-        @test norm(basis.D * u - uprim.(basis.nodes)) < tolerance(p, T)
+        @test basis.D * u ≈ uprim.(basis.nodes) atol=tolerance(p, T)
     end
 end
 
@@ -60,10 +61,10 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
             throw(m)
         end
         u = ufunc.(basis.nodes)
-        xplot = linspace(-1, 1, 100)
+        xplot = range(-1, stop=1, length=100)
         u1 = derivative_at(xplot, u, basis)
         u2 = interpolate(xplot, basis.D*u, basis)
-        @test norm(u1 - u2, Inf) < 5.e-12
+        @test u1 ≈ u2
     end
 
     for p in 0:15
@@ -74,7 +75,7 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
             throw(m)
         end
         u = ufunc.(basis.nodes)
-        xplot = linspace(-1, 1, 100)
+        xplot = range(-1, stop=1, length=100)
         u1 = derivative_at(xplot, u, basis)
         u2 = interpolate(xplot, basis.D*u, basis)
         @test norm(u1 - u2, Inf) < 5.f-3

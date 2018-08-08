@@ -78,8 +78,8 @@ Methods for CFD, Appendix B].
 """
 function gauss_jacobi_nodes_and_weights(p, α, β, T=Float64::Type, tol=4*eps(T), maxit=1000)
     T = promote_type(typeof(α), typeof(β), T)
-    nodes = Vector{T}(p+1)
-    weights = Vector{T}(p+1)
+    nodes = Vector{T}(undef, p+1)
+    weights = Vector{T}(undef, p+1)
     for j in 0:p
         x = -cospi(T(2j+1)/(2p+2))
         if j > 0
@@ -106,18 +106,18 @@ end
 
 
 
-doc"
+"""
     jacobi_vandermonde(nodes, α, β)
 
 Computes the Vandermonde matrix with respect to the Jacobi polynomials with
 parameters `α`, `β` and the nodal basis on `nodes`.
-The Vandermonde matrix $V$ is the transformation matrix from the modal Jacobi
+The Vandermonde matrix `V` is the transformation matrix from the modal Jacobi
 basis to the nodal Lagrange basis associated with `nodes`.
-"
+"""
 function jacobi_vandermonde(nodes::AbstractVector, α, β)
     T = eltype(nodes)
     pp1 = length(nodes)
-    V = Array{T}(pp1, pp1)
+    V = Array{T}(undef, pp1, pp1)
     for j in 1:pp1, (i,x) in enumerate(nodes)
       V[i, j] = jacobi(x, j-1, α, β)
     end

@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
 
 ufunc(x) = sinpi(x)^2
 
