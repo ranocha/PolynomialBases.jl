@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases, FastGaussQuadrature
+using Test, PolynomialBases, FastGaussQuadrature
 import SymPy
 
 x, α, β = SymPy.symbols("x, alpha, beta")
@@ -21,7 +21,7 @@ x, α, β = SymPy.symbols("x, alpha, beta")
 @inferred jacobi(10., 4, 3, 2)
 
 # Gauss Jacobi nodes and weights
-for p in 0:10, α in linspace(-0.9, 4, 50), β in linspace(-0.9, 4, 50)
+for p in 0:10, α in range(-0.9, stop=4, length=50), β in range(-0.9, stop=4, length=50)
     x1, w1 = gaussjacobi(p+1, α, β)
     @inferred PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β)
     x2, w2 = PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β)
@@ -31,8 +31,8 @@ end
 
 # Vandermonde matrices for Gauss Jacobi nodes and weights
 # NOTE: Only some tests for low polynomial degrees since the Vandermonde matrix
-#       becomes very ill-conditioned for higher values of p.
-for p in 0:8, α in linspace(-0.9, 4, 50), β in linspace(-0.9, 4, 50)
+#       becomes ill-conditioned for higher values of p.
+for p in 0:8, α in range(-0.9, stop=4, length=50), β in range(-0.9, stop=4, length=50)
     basis1 = GaussJacobi(p, α, β)
     V1 = jacobi_vandermonde(basis1, α, β)
 
@@ -41,7 +41,7 @@ for p in 0:8, α in linspace(-0.9, 4, 50), β in linspace(-0.9, 4, 50)
 
     R = interpolation_matrix(basis1.nodes, basis2)
 
-    P = eye(p+2, p+1)
+    P = Matrix(I, p+2, p+1)
 
-    @test norm(R * V2 * P / V1 - I) < 2.e-13
+    @test R * V2 * P / V1 ≈ I
 end

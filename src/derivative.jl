@@ -45,7 +45,7 @@ function derivative_at(x::AbstractArray, values, nodes, baryweights)
         @assert size(values) == size(nodes) == size(baryweights)
     end
     T = promote_type(eltype(x), eltype(values), eltype(nodes), eltype(baryweights))
-    res = Array{T}(size(x))
+    res = Array{T}(undef, size(x))
     @inbounds derivative_at!(res, x, values, nodes, baryweights)
     res
 end
@@ -83,7 +83,7 @@ function derivative_matrix(nodes, baryweights)
         @assert length(nodes) == length(baryweights)
     end
     T = promote_type(eltype(nodes), eltype(baryweights))
-    mat = Array{T}(length(nodes), length(nodes))
+    mat = Array{T}(undef, length(nodes), length(nodes))
     @inbounds derivative_matrix!(mat, nodes, baryweights)
     mat
 end

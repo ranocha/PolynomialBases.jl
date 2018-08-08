@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
 import SymEngine
 
 tol = 5.e-14

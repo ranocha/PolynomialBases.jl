@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
 import SymPy
 
 tol = 5.e-15

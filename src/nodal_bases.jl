@@ -50,7 +50,7 @@ nodal basis `basis`.
 function compute_coefficients(u, basis::NodalBasis{Line})
     xmin = first(basis.nodes)
     xmax = last(basis.nodes)
-    uval = Array{typeof(u((xmin+xmax)/2))}(length(basis.nodes))
+    uval = Array{typeof(u((xmin+xmax)/2))}(undef, length(basis.nodes))
     compute_coefficients!(uval, u, basis)
     uval
 end
@@ -75,8 +75,8 @@ spaced nodes. Returns `xplot, uplot`, where `xplot` contains the equally spaced
 nodes and `uplot` the corresponding values of `u`.
 """
 function evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
-    xplot = Array{eltype(basis.nodes)}(npoints)
-    uplot = Array{eltype(u)}(npoints)
+    xplot = Array{eltype(basis.nodes)}(undef, npoints)
+    uplot = Array{eltype(u)}(undef, npoints)
 
     evaluate_coefficients!(xplot, uplot, u, basis)
 end
@@ -94,7 +94,7 @@ function evaluate_coefficients!(xplot, uplot, u, basis::NodalBasis{Line})
     npoints = length(xplot)
     T = eltype(xplot)
 
-    xplot .= linspace(T(-1), T(1), npoints)
+    xplot .= range(T(-1), stop=T(1), length=npoints)
     interpolate!(uplot, xplot, u, basis)
 
     xplot, uplot
@@ -109,7 +109,7 @@ Return the matrices
 - `M`, mass matrix
 - `R`, restriction matrix (interpolation to the boundaries)
 - `B`, boundary normal matrix
-- `MinvRtB = M \ R' * B`
+- `MinvRtB = M \\ R' * B`
 used in the formulation of flux reconstruction / correction procedure via
 reconstruction using summation-by-parts operators, cf. Ranocha, Öffner, Sonar
 (2016) Summation-by-parts operators for correction procedure via reconstruction,
@@ -164,89 +164,9 @@ function LobattoLegendre(p::Int, T=Float64)
     LobattoLegendre(nodes, weights, baryweights, D)
 end
 
-@require SymPy begin
-    function LobattoLegendre(p::Int, T::Type{SymPy.Sym})
-        if p == 0
-            nodes   = T[0]
-            weights = T[2]
-        elseif p == 1
-            nodes   = T[-1, 1]
-            weights = T[1, 1]
-        elseif p == 2
-            nodes   = T[-1, 0, 1]
-            weights = T[1//3, 4//3, 1//3]
-        elseif p == 3
-            sqrt_1_5 = sqrt(one(T) / 5)
-            nodes   = T[-1, -sqrt_1_5, sqrt_1_5, 1]
-            weights = T[1//6, 5//6, 5//6, 1//6]
-        elseif p == 4
-            sqrt_3_7 = sqrt(T(3) / 7)
-            nodes   = T[-1, -sqrt_3_7, 0, sqrt_3_7, 1]
-            weights = T[1//10, 49//90, 32//45, 49//90, 1//10]
-        elseif p == 5
-            sqrt_7 = sqrt(T(7))
-            sqrt_m = sqrt(one(T)/3 - 2*sqrt_7/21)
-            sqrt_p = sqrt(one(T)/3 + 2*sqrt_7/21)
-            nodes   = T[-1, -sqrt_p, -sqrt_m, sqrt_m, sqrt_p, 1]
-            weights = T[1//15, (14-sqrt_7)/30, (14+sqrt_7)/30, (14+sqrt_7)/30, (14-sqrt_7)/30, 1//15]
-        elseif p == 6
-            sqrt_5_3 = sqrt(T(5) / 3)
-            sqrt_15 = sqrt(T(15))
-            sqrt_m = sqrt((5 - 2*sqrt_5_3)/11)
-            sqrt_p = sqrt((5 + 2*sqrt_5_3)/11)
-            nodes   = T[-1, -sqrt_p, -sqrt_m, 0, sqrt_m, sqrt_p, 1]
-            weights = T[1//21, (124-7*sqrt_15)/350, (124+7*sqrt_15)/350, 256//525, (124+7*sqrt_15)/350, (124-7*sqrt_15)/350, 1//21]
-        else
-            throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
-        end
-        baryweights = SymPy.simplify.(barycentric_weights(nodes))
-        D = SymPy.simplify.(derivative_matrix(nodes, baryweights))
-        LobattoLegendre(nodes, weights, baryweights, D)
-    end
-end
+# special methods of LobattoLegendre for SymPy and SymEngine are in __init__
 
-@require SymEngine begin
-    function LobattoLegendre(p::Int, T::Type{SymEngine.Basic})
-        if p == 0
-            nodes   = T[0]
-            weights = T[2]
-        elseif p == 1
-            nodes   = T[-1, 1]
-            weights = T[1, 1]
-        elseif p == 2
-            nodes   = T[-1, 0, 1]
-            weights = T[1//3, 4//3, 1//3]
-        elseif p == 3
-            sqrt_1_5 = sqrt(one(T) / 5)
-            nodes   = T[-1, -sqrt_1_5, sqrt_1_5, 1]
-            weights = T[1//6, 5//6, 5//6, 1//6]
-        elseif p == 4
-            sqrt_3_7 = sqrt(T(3) / 7)
-            nodes   = T[-1, -sqrt_3_7, 0, sqrt_3_7, 1]
-            weights = T[1//10, 49//90, 32//45, 49//90, 1//10]
-        elseif p == 5
-            sqrt_7 = sqrt(T(7))
-            sqrt_m = sqrt(one(T)/3 - 2*sqrt_7/21)
-            sqrt_p = sqrt(one(T)/3 + 2*sqrt_7/21)
-            nodes   = T[-1, -sqrt_p, -sqrt_m, sqrt_m, sqrt_p, 1]
-            weights = T[1//15, (14-sqrt_7)/30, (14+sqrt_7)/30, (14+sqrt_7)/30, (14-sqrt_7)/30, 1//15]
-        elseif p == 6
-            sqrt_5_3 = sqrt(T(5) / 3)
-            sqrt_15 = sqrt(T(15))
-            sqrt_m = sqrt((5 - 2*sqrt_5_3)/11)
-            sqrt_p = sqrt((5 + 2*sqrt_5_3)/11)
-            nodes   = T[-1, -sqrt_p, -sqrt_m, 0, sqrt_m, sqrt_p, 1]
-            weights = T[1//21, (124-7*sqrt_15)/350, (124+7*sqrt_15)/350, 256//525, (124+7*sqrt_15)/350, (124-7*sqrt_15)/350, 1//21]
-        else
-            throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
-        end
-        baryweights = SymEngine.expand.(barycentric_weights(nodes))
-        D = SymEngine.expand.(derivative_matrix(nodes, baryweights))
-        LobattoLegendre(nodes, weights, baryweights, D)
-    end
-end
-
-function Base.show{T}(io::IO, basis::LobattoLegendre{T})
+function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
   print(io, "LobattoLegendre{", T, "}: Nodal Lobatto Legendre basis of degree ",
             degree(basis))
 end
@@ -293,83 +213,7 @@ function GaussLegendre(p::Int, T=Float64)
     GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
 end
 
-@require SymPy begin
-    function GaussLegendre(p::Int, T::Type{SymPy.Sym})
-        if p == 0
-            nodes   = T[0]
-            weights = T[2]
-        elseif p == 1
-            sqrt_1_3 = sqrt(one(T) / 3)
-            nodes   = T[-sqrt_1_3, sqrt_1_3]
-            weights = T[1, 1]
-        elseif p == 2
-            sqrt_3_5 = sqrt(T(3) / 5)
-            nodes   = T[-sqrt_3_5, 0, sqrt_3_5]
-            weights = T[5//9, 8//9, 5//9]
-        elseif p == 3
-            sqrt_30 = sqrt(T(30))
-            sqrt_6_5 = sqrt(T(6)/5)
-            sqrt_m = sqrt((3-2*sqrt_6_5)/7)
-            sqrt_p = sqrt((3+2*sqrt_6_5)/7)
-            nodes   = T[-sqrt_p, -sqrt_m, sqrt_m, sqrt_p]
-            weights = T[(18-sqrt_30)/36, (18+sqrt_30)/36, (18+sqrt_30)/36, (18-sqrt_30)/36]
-        elseif p == 4
-            sqrt_70 = sqrt(T(70))
-            sqrt_10_7 = sqrt(T(10)/7)
-            sqrt_m = sqrt(5 - 2*sqrt_10_7) / 3
-            sqrt_p = sqrt(5 + 2*sqrt_10_7) / 3
-            w_m = (322-13*sqrt_70) / 900
-            w_p = (322+13*sqrt_70) / 900
-            nodes   = T[-sqrt_p, -sqrt_m, 0, sqrt_m, sqrt_p]
-            weights = T[w_m, w_p, 128//225, w_p, w_m]
-        else
-            throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
-        end
-        baryweights = SymPy.simplify.(barycentric_weights(nodes))
-        D = SymPy.simplify.(derivative_matrix(nodes, baryweights))
-        R = interpolation_matrix([-1, 1], nodes, baryweights)
-        GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
-    end
-end
-
-@require SymEngine begin
-    function GaussLegendre(p::Int, T::Type{SymEngine.Basic})
-        if p == 0
-            nodes   = T[0]
-            weights = T[2]
-        elseif p == 1
-            sqrt_1_3 = sqrt(one(T) / 3)
-            nodes   = T[-sqrt_1_3, sqrt_1_3]
-            weights = T[1, 1]
-        elseif p == 2
-            sqrt_3_5 = sqrt(T(3) / 5)
-            nodes   = T[-sqrt_3_5, 0, sqrt_3_5]
-            weights = T[5//9, 8//9, 5//9]
-        elseif p == 3
-            sqrt_30 = sqrt(T(30))
-            sqrt_6_5 = sqrt(T(6)/5)
-            sqrt_m = sqrt((3-2*sqrt_6_5)/7)
-            sqrt_p = sqrt((3+2*sqrt_6_5)/7)
-            nodes   = T[-sqrt_p, -sqrt_m, sqrt_m, sqrt_p]
-            weights = T[(18-sqrt_30)/36, (18+sqrt_30)/36, (18+sqrt_30)/36, (18-sqrt_30)/36]
-        elseif p == 4
-            sqrt_70 = sqrt(T(70))
-            sqrt_10_7 = sqrt(T(10)/7)
-            sqrt_m = sqrt(5 - 2*sqrt_10_7) / 3
-            sqrt_p = sqrt(5 + 2*sqrt_10_7) / 3
-            w_m = (322-13*sqrt_70) / 900
-            w_p = (322+13*sqrt_70) / 900
-            nodes   = T[-sqrt_p, -sqrt_m, 0, sqrt_m, sqrt_p]
-            weights = T[w_m, w_p, 128//225, w_p, w_m]
-        else
-            throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
-        end
-        baryweights = SymEngine.expand.(barycentric_weights(nodes))
-        D = SymEngine.expand.(derivative_matrix(nodes, baryweights))
-        R = interpolation_matrix([-1, 1], nodes, baryweights)
-        GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
-    end
-end
+# special methods of GaussLegendre for SymPy and SymEngine are in __init__
 
 function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
   print(io, "GaussLegendre{", T, "}: Nodal Gauss Legendre basis of degree ",
@@ -515,7 +359,8 @@ function ClenshawCurtis(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     else
-        nodes, weights = clenshawcurtis(p+1, zero(T), zero(T))
+        nodes = clenshawcurtisnodes(T, p+1)
+        weights = clenshawcurtisweights(chebyshevmoments1(T, p+1))
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)

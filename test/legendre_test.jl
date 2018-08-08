@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases, FastGaussQuadrature
+using Test, PolynomialBases, FastGaussQuadrature
 import SymPy
 
 x = SymPy.symbols("x")

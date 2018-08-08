@@ -1,4 +1,5 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
+using LinearAlgebra
 import StaticArrays
 
 ufunc₁(x) = sinpi(x)
@@ -61,7 +62,7 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
         u = ufc.(basis.nodes)
         u2 = compute_coefficients(ufc, basis)
         @test maximum(abs, u-u2) < 10*eps(T)
-        xplot = linspace(-1, 1, 100)
+        xplot = range(-1, stop=1, length=100)
         uplot = interpolate(xplot, u, basis)
         @test norm(ufc.(xplot) - uplot, Inf) < tolerance(p, ufc)
         xplot2, uplot2 = evaluate_coefficients(u, basis, length(xplot))
@@ -80,10 +81,10 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
             throw(m)
         end
         u = ufc.(basis.nodes)
-        xplot = linspace(-1, 1, 100)
+        xplot = range(-1, stop=1, length=100)
         u1 = interpolate(xplot, u, basis)
         u2 = interpolation_matrix(xplot, basis) * u
-        @test norm(u1 - u2) < 1.e-14
+        @test u1 ≈ u2 atol=1.e-14
     end
 end
 
@@ -94,7 +95,7 @@ for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 1:10, T in (Float32, Float64)
     x = T[-1, 1]
     u1 = interpolate(x, u, basis)
     u2 = similar(u1); u2[1] = dot(basis.interp_left, u); u2[2] = dot(basis.interp_right, u)
-    @test norm(u1 - u2) < 5*eps(T)
+    @test u1 ≈ u2 atol=5*eps(T)
 end
 
 # change of bases
@@ -108,7 +109,7 @@ for ufc in (ufunc₁, ufunc₂, ufunc₃), p in 3:10, T in (Float32, Float64)
     u12 = change_basis(basis1, u2, basis2)
     u21 = change_basis(basis2, u1, basis1)
 
-    xplot = linspace(-1, 1, 100)
+    xplot = range(-1, stop=1, length=100)
 
     @test norm(interpolate(xplot,u1,basis1) - interpolate(xplot,u12,basis1), Inf) < tolerance(p, ufc)
     @test norm(interpolate(xplot,u2,basis2) - interpolate(xplot,u21,basis2), Inf) < tolerance(p, ufc)

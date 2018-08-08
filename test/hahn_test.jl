@@ -1,4 +1,4 @@
-using Base.Test, PolynomialBases
+using Test, PolynomialBases
 import SymPy
 
 x, α, β, N = SymPy.symbols("x, alpha, beta, N")
