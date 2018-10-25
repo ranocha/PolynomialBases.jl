@@ -126,6 +126,10 @@ function utility_matrices(basis::NodalBasis{Line})
 end
 
 
+# for broadcasting; treat bases as scalars
+Base.broadcastable(basis::NodalBasis) = Ref(basis)
+
+
 
 """
     LobattoLegendre{T}
