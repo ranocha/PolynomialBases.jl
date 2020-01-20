@@ -159,7 +159,7 @@ function LobattoLegendre(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     elseif T == Float64
-        nodes, weights = gausslobatto(p+1)
+        nodes::Vector{Float64}, weights::Vector{Float64} = gausslobatto(p+1)
     else
         nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
     end
@@ -207,7 +207,7 @@ Generate the `GaussLegendre` basis of degree `p` with scalar type `T`.
 """
 function GaussLegendre(p::Int, T=Float64)
     if T == Float64
-        nodes, weights = gausslegendre(p+1)
+        nodes::Vector{Float64}, weights::Vector{Float64} = gausslegendre(p+1)
     else
         nodes, weights = gauss_legendre_nodes_and_weights(p, T)
     end
@@ -257,7 +257,7 @@ scalar type `T`.
 """
 function GaussJacobi(p::Int, α, β, T=Float64)
     if T == Float64
-        nodes, weights = gaussjacobi(p+1, α, β)
+        nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, α, β)
     else
         nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
     end

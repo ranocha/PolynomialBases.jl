@@ -5,7 +5,7 @@ using Requires
 using Parameters
 using LinearAlgebra
 using SpecialFunctions
-using FastGaussQuadrature
+using FastGaussQuadrature: gausslegendre, gausslobatto, gaussjacobi
 using FastTransforms: clenshawcurtisnodes, clenshawcurtisweights, chebyshevmoments1
 
 

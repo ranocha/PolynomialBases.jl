@@ -5,6 +5,7 @@ ufunc(x) = sinpi(x)
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
     for p in 1:5
         basis = basis_type(p)
+        @inferred basis_type(p)
         u = ufunc.(basis.nodes)
         D, M, R, B, MinvRtB = utility_matrices(basis)
 
