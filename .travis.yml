@@ -16,6 +16,9 @@ matrix:
 notifications:
   email: false
 
+script:
+  - julia -e 'ENV["PYTHON"]=""; using Pkg; Pkg.add("PyCall"); Pkg.build("PyCall"); Pkg.build(; verbose=true); Pkg.test(coverage=true)'
+
 after_success:
   # push coverage results to Coveralls
   - julia -e 'using Pkg; cd(Pkg.dir("SummationByPartsOperators")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
