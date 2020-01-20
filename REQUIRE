@@ -1,8 +1,0 @@
-julia 0.7
-
-ArgCheck
-Requires
-Parameters
-FastTransforms 0.4
-SpecialFunctions
-FastGaussQuadrature
