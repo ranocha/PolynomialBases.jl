@@ -5,14 +5,15 @@ Evaluate the Legendre polynomial of degree `p` at `x` using the three term
 recursion [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 20].
 """
 function legendre(x, p::Integer)
+    a::typeof(x) = one(x)
+    b::typeof(x) = x
+
     if p <= 0
-        return one(x)
+        return a
     elseif p == 1
-        return x
+        return b
     end
 
-    a = one(x)
-    b = x
     for j in 2:p
         a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
     end
@@ -28,18 +29,18 @@ the three term recursion [Kopriva, Implementing Spectral Methods for PDEs,
 Algorithm 22].
 """
 function legendre_and_derivative(x, p::Integer)
-    if p <= 0
-        return one(x), zero(x)
-    elseif p == 1
-        return x, one(x)
-    end
-
     # coefficients for the polynomial...
-    a = one(x)
-    b = x
+    a::typeof(x) = one(x)
+    b::typeof(x) = x
     # ... and for the derivative
-    aa = zero(x)
-    bb = one(x)
+    aa::typeof(x) = zero(x)
+    bb::typeof(x) = one(x)
+
+    if p <= 0
+        return a, aa
+    elseif p == 1
+        return b, bb
+    end
 
     for j in 2:p
         a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
