@@ -158,14 +158,22 @@ function LobattoLegendre(p::Int, T=Float64)
     if p == 0
         nodes = T[0]
         weights = T[2]
-    elseif T == Float64
-        nodes::Vector{Float64}, weights::Vector{Float64} = gausslobatto(p+1)
     else
-        nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
+        nodes, weights = lobatto_legendre_nodes_and_weights_impl(p, T)
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     LobattoLegendre(nodes, weights, baryweights, D)
+end
+
+function lobatto_legendre_nodes_and_weights_impl(p, ::Type{Float64})
+    nodes::Vector{Float64}, weights::Vector{Float64} = gausslobatto(p+1)
+    nodes, weights
+end
+
+function lobatto_legendre_nodes_and_weights_impl(p, T::DataType)
+    nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
+    nodes, weights
 end
 
 # special methods of LobattoLegendre for SymPy and SymEngine are in __init__
@@ -206,15 +214,21 @@ end
 Generate the `GaussLegendre` basis of degree `p` with scalar type `T`.
 """
 function GaussLegendre(p::Int, T=Float64)
-    if T == Float64
-        nodes::Vector{Float64}, weights::Vector{Float64} = gausslegendre(p+1)
-    else
-        nodes, weights = gauss_legendre_nodes_and_weights(p, T)
-    end
+    nodes, weights = gauss_legendre_nodes_and_weights_impl(p, T)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
     GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
+end
+
+function gauss_legendre_nodes_and_weights_impl(p, ::Type{Float64})
+    nodes::Vector{Float64}, weights::Vector{Float64} = gausslegendre(p+1)
+    nodes, weights
+end
+
+function gauss_legendre_nodes_and_weights_impl(p, T::DataType)
+    nodes, weights = gauss_legendre_nodes_and_weights(p, T)
+    nodes, weights
 end
 
 # special methods of GaussLegendre for SymPy and SymEngine are in __init__
@@ -256,20 +270,26 @@ Generate the `JacobiLegendre` basis of degree `p` with parameters `α`, `β` and
 scalar type `T`.
 """
 function GaussJacobi(p::Int, α, β, T=Float64)
-    if T == Float64
-        nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, α, β)
-    else
-        nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
-    end
+    nodes, weights = gauss_jacobi_nodes_and_weights_impl(p, α, β, T)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     GaussJacobi(promote(α, β)..., nodes, weights, baryweights, D)
 end
 
+function gauss_jacobi_nodes_and_weights_impl(p, α, β, ::Type{Float64})
+    nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, α, β)
+    nodes, weights
+end
+
+function gauss_jacobi_nodes_and_weights_impl(p, α, β, T::DataType)
+    nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
+    nodes, weights
+end
+
 GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)
 
-function Base.show(io::IO, basis::GaussJacobi{T}) where {T}
-  print(io, "GaussJacobi{", T, "}: Nodal Gauss Jacobi basis of degree ",
+function Base.show(io::IO, basis::GaussJacobi{T1, T}) where {T1, T}
+  print(io, "GaussJacobi{", T1, ", ", T, "}: Nodal Gauss Jacobi basis of degree ",
             degree(basis), " with parameters α=", basis.α, " and β = ", basis.β)
 end
 
