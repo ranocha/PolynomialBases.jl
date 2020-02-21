@@ -1,7 +1,7 @@
 name = "PolynomialBases"
 uuid = "c74db56a-226d-5e98-8bb0-a6049094aeea"
-version = "0.4.5"
 author = ["Hendrik Ranocha"]
+version = "0.4.5"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
@@ -13,7 +13,7 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
-ArgCheck = "1"
+ArgCheck = "1, 2.0"
 FastGaussQuadrature = "0.4.2"
 FastTransforms = "0.4, 0.5, 0.6, 0.7, 0.8"
 Parameters = "0.12"
