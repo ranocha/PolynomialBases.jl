@@ -383,7 +383,7 @@ function ClenshawCurtis(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     else
-        nodes = clenshawcurtisnodes(T, p+1)
+        nodes = clenshawcurtisnodes(T, p+1) |> collect
         weights = clenshawcurtisweights(chebyshevmoments1(T, p+1))
     end
     baryweights = barycentric_weights(nodes)
