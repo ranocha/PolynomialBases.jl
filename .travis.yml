@@ -6,8 +6,8 @@ os:
   # - osx
 
 julia:
-  - 1.5
-  - nightly
+  - 1
+  # - nightly
 
 matrix:
   allow_failures:
@@ -15,6 +15,12 @@ matrix:
 
 notifications:
   email: false
+
+# avoid duplicate tests in PRs
+branches:
+  only:
+    - master
+    - dev
 
 script:
   - julia -e 'ENV["PYTHON"]=""; using Pkg; Pkg.add("PyCall"); Pkg.build("PyCall"); Pkg.build(; verbose=true); Pkg.test(coverage=true)'
