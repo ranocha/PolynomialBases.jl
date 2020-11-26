@@ -13,12 +13,12 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
-ArgCheck = "1, 2.0"
+ArgCheck = "2.0"
 FastGaussQuadrature = "0.4.2"
-FastTransforms = "0.10"
+FastTransforms = "0.11"
 Parameters = "0.12"
 Requires = "1"
-SpecialFunctions = "0.10, 1.0"
+SpecialFunctions = "1.0"
 julia = "0.7, 1"
 
 [extras]
