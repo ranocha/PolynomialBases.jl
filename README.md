@@ -4,7 +4,7 @@
 [![Codecov](http://codecov.io/github/ranocha/PolynomialBases.jl/coverage.svg?branch=master)](http://codecov.io/github/ranocha/PolynomialBases.jl?branch=master)
 [![Coveralls](https://coveralls.io/repos/ranocha/PolynomialBases.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/ranocha/PolynomialBases.jl?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
-[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/ranocha/PolynomialBases.jl/v0.4.7.svg?style=social&logo=github)](https://github.com/ranocha/PolynomialBases.jl)
+[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/ranocha/PolynomialBases.jl/v0.4.8.svg?style=social&logo=github)](https://github.com/ranocha/PolynomialBases.jl)
 <!-- [![Build status](https://ci.appveyor.com/api/projects/status/i1saoodeqrepiodl?svg=true)](https://ci.appveyor.com/project/ranocha/PolynomialBases-jl)
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/P/PolynomialBases.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html) -->
 
