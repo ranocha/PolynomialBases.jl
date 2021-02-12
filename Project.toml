@@ -15,7 +15,7 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 [compat]
 ArgCheck = "2.0"
 FastGaussQuadrature = "0.4.2"
-FastTransforms = "0.11"
+FastTransforms = "0.11, 0.12"
 Parameters = "0.12"
 Requires = "1"
 SpecialFunctions = "1"
