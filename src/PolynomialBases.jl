@@ -1,12 +1,13 @@
 module PolynomialBases
 
-using ArgCheck
-using Requires
-using Parameters
 using LinearAlgebra
-using SpecialFunctions
+
+using ArgCheck
 using FastGaussQuadrature: gausslegendre, gausslobatto, gaussjacobi
 using FastTransforms: clenshawcurtisnodes, clenshawcurtisweights, chebyshevmoments1
+using Requires: @require
+using UnPack: @unpack
+using SpecialFunctions
 
 
 # types
