@@ -383,8 +383,21 @@ function ClenshawCurtis(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     else
-        nodes = clenshawcurtisnodes(T, p+1) |> collect
-        weights = clenshawcurtisweights(chebyshevmoments1(T, p+1))
+        nodes = Vector{T}(undef, p + 1)
+        for k in eachindex(nodes)
+            nodes[k] = sinpi(convert(T, p + 2 - 2 * k) / (2 * p))
+        end
+
+        weights = zeros(T, p + 1)
+        for i in 0:2:p
+            @inbounds weights[i+1] = convert(T, 2) / convert(T, (1 - i^2))
+        end
+        rmul!(weights, inv(convert(T, p)))
+        plan = FFTW.plan_r2r!(weights, FFTW.REDFT00)
+        plan * weights
+        half = inv(convert(T, 2))
+        weights[1] *= half
+        weights[end] *= half
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)

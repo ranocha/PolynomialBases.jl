@@ -2,9 +2,9 @@ module PolynomialBases
 
 using LinearAlgebra
 
-using ArgCheck
+using ArgCheck: @argcheck
+using FFTW: FFTW
 using FastGaussQuadrature: gausslegendre, gausslobatto, gaussjacobi
-using FastTransforms: clenshawcurtisnodes, clenshawcurtisweights, chebyshevmoments1
 using Requires: @require
 using UnPack: @unpack
 using SpecialFunctions
