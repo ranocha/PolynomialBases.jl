@@ -1,5 +1,6 @@
-*.jl.cov
-*.jl.*.cov
-*.jl.mem
-notebooks/.ipynb_checkpoints/
+**/*.jl.cov
+**/*.jl.*.cov
+**/*.jl.mem
+**/.ipynb_checkpoints/
+**/Manifest.toml
 

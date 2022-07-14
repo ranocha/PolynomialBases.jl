@@ -20,13 +20,3 @@ Requires = "1"
 SpecialFunctions = "1, 2"
 UnPack = "1"
 julia = "1.6"
-
-[extras]
-InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
-StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
-SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
-SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["InteractiveUtils", "StaticArrays", "SymEngine", "SymPy", "Test"]
