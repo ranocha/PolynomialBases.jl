@@ -1,6 +1,6 @@
 using Test, PolynomialBases, FastGaussQuadrature
 
-if !haskey(ENV, "JULIA_PKGEVAL") # sympy is not install on https://github.com/JuliaComputing/NewPkgEval.jl
+if !haskey(ENV, "JULIA_PKGEVAL") # sympy is not installed on https://github.com/JuliaComputing/NewPkgEval.jl
     import SymPy
     x, α, β = SymPy.symbols("x, alpha, beta")
 
