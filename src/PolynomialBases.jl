@@ -7,7 +7,7 @@ using FFTW: FFTW
 using FastGaussQuadrature: gausslegendre, gausslobatto, gaussjacobi
 using Requires: @require
 using UnPack: @unpack
-using SpecialFunctions
+using SpecialFunctions: gamma
 
 
 # types
