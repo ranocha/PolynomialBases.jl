@@ -1,4 +1,4 @@
-using Test, PolynomialBases, FastGaussQuadrature
+using Test, PolynomialBases, PolynomialBases.FastGaussQuadrature
 
 if !haskey(ENV, "JULIA_PKGEVAL") # sympy is not installed on https://github.com/JuliaComputing/NewPkgEval.jl
   import SymPy

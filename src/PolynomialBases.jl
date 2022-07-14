@@ -4,7 +4,7 @@ using LinearAlgebra
 
 using ArgCheck: @argcheck
 using FFTW: FFTW
-using FastGaussQuadrature: gausslegendre, gausslobatto, gaussjacobi
+using FastGaussQuadrature: FastGaussQuadrature, gausslegendre, gausslobatto, gaussjacobi
 using Requires: @require
 using UnPack: @unpack
 using SpecialFunctions: gamma
