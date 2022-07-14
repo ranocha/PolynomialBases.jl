@@ -2,12 +2,12 @@ module PolynomialBases
 
 using LinearAlgebra
 
-using ArgCheck
-using FastGaussQuadrature: gausslegendre, gausslobatto, gaussjacobi
-using FastTransforms: clenshawcurtisnodes, clenshawcurtisweights, chebyshevmoments1
+using ArgCheck: @argcheck
+using FFTW: FFTW
+using FastGaussQuadrature: FastGaussQuadrature, gausslegendre, gausslobatto, gaussjacobi
 using Requires: @require
 using UnPack: @unpack
-using SpecialFunctions
+using SpecialFunctions: gamma
 
 
 # types
