@@ -15,7 +15,7 @@ UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 [compat]
 ArgCheck = "2.0"
 FFTW = "1"
-FastGaussQuadrature = "0.4.2"
+FastGaussQuadrature = "0.4.2, 0.5"
 Requires = "1"
 SpecialFunctions = "1, 2"
 UnPack = "1"
