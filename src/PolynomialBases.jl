@@ -3,6 +3,7 @@ module PolynomialBases
 using LinearAlgebra
 
 using ArgCheck: @argcheck
+using AutoHashEquals: @auto_hash_equals
 using FFTW: FFTW
 using FastGaussQuadrature: FastGaussQuadrature, gausslegendre, gausslobatto, gaussjacobi
 using Requires: @require
