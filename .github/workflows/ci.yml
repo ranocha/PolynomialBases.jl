@@ -33,7 +33,7 @@ jobs:
             os: ubuntu-latest
             arch: x64
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
@@ -93,7 +93,7 @@ jobs:
       - shell: bash
         run: |
           cp ./lcov.info ./lcov-${{ matrix.os }}-${{ matrix.version }}-${{ matrix.arch }}-${{ github.run_id }}.info
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: lcov-${{ matrix.os }}-${{ matrix.version }}-${{ matrix.arch }}-${{ github.run_id }}
           path: ./lcov-${{ matrix.os }}-${{ matrix.version }}-${{ matrix.arch }}-${{ github.run_id }}.info
@@ -115,8 +115,8 @@ jobs:
       # Instead, we use the more tedious approach described above.
       # At first, we check out the repository and download all artifacts
       # (and list files for debugging).
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
       - run: ls -R
       # Next, we merge the individual coverage files and upload
       # the combined results to Coveralls.
@@ -139,7 +139,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./lcov.info
       # Upload merged coverage data as artifact for debugging
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: lcov
           path: ./lcov.info
