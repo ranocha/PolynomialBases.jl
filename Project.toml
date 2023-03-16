@@ -1,7 +1,7 @@
 name = "PolynomialBases"
 uuid = "c74db56a-226d-5e98-8bb0-a6049094aeea"
 author = ["Hendrik Ranocha"]
-version = "0.4.16"
+version = "0.4.17"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
@@ -10,8 +10,8 @@ FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 FastGaussQuadrature = "442a2c76-b920-505d-bb47-c5924d526838"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+SimpleUnPack = "ce78b400-467f-4804-87d8-8f486da07d0a"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
 [compat]
 ArgCheck = "2.0"
@@ -19,6 +19,6 @@ AutoHashEquals = "0.2"
 FFTW = "1"
 FastGaussQuadrature = "0.4.2, 0.5"
 Requires = "1"
+SimpleUnPack = "1"
 SpecialFunctions = "1, 2"
-UnPack = "1"
 julia = "1.6"
