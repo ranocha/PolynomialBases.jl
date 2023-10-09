@@ -8,5 +8,5 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 StaticArrays = "1"
-SymEngine = "0.8, 0.9, 0.10"
+SymEngine = "0.8, 0.9, 0.10, 0.11"
 SymPy = "1"
