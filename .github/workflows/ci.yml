@@ -74,8 +74,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
       # The standard setup of Coveralls is just annoying for parallel builds, see, e.g.,
       # https://github.com/trixi-framework/Trixi.jl/issues/691
       # https://github.com/coverallsapp/github-action/issues/47
