@@ -1,6 +1,6 @@
 module PolynomialBases
 
-using LinearAlgebra
+using LinearAlgebra: Diagonal, rmul!
 
 using ArgCheck: @argcheck
 using AutoHashEquals: @auto_hash_equals
