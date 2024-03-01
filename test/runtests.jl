@@ -2,6 +2,7 @@ using Test
 using PolynomialBases
 
 @elapsed begin
+    @time @testset "Explicit Imports" begin include("explicit_imports.jl") end
     @time @testset "Canonical Mappings" begin include("canonical_mappings_test.jl") end
     @time @testset "Interpolation" begin include("interpolation_test.jl") end
     @time @testset "Integration" begin include("integration_test.jl") end
