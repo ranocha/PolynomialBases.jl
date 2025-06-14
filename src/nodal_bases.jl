@@ -184,6 +184,8 @@ function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
 end
 
 @inline includes_boundaries(basis::LobattoLegendre) = Val{true}()
+@inline includes_left_boundary(basis::LobattoLegendre) = Val{true}()
+@inline includes_right_boundary(basis::LobattoLegendre) = Val{true}()
 
 @inline satisfies_sbp(basis::LobattoLegendre) = Val{true}()
 
@@ -239,8 +241,62 @@ function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
 end
 
 @inline includes_boundaries(basis::GaussLegendre) = Val{false}()
+@inline includes_left_boundary(basis::GaussLegendre) = Val{false}()
+@inline includes_right_boundary(basis::GaussLegendre) = Val{false}()
 
 @inline satisfies_sbp(basis::GaussLegendre) = Val{true}()
+
+
+"""
+    GaussRadau{T}
+
+The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
+with scalar type `T`.
+"""
+@auto_hash_equals struct GaussRadau{T} <: NodalBasis{Line}
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+    interp_left::Vector{T}
+    interp_right::Vector{T}
+
+    function GaussRadau(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
+        new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
+    end
+end
+
+"""
+    GaussRadau(p::Int, T=Float64)
+
+Generate the `GaussRadau` basis of degree `p` with scalar type `T`.
+"""
+function GaussRadau(p::Int, T=Float64)
+    nodes, weights = gauss_radau_nodes_and_weights_impl(p, T)
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    R = interpolation_matrix(T[-1, 1], nodes, baryweights)
+    GaussRadau(nodes, weights, baryweights, D, R[1,:], R[2,:])
+end
+
+function gauss_radau_nodes_and_weights_impl(p, T::DataType)
+    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
+    nodes, weights
+end
+
+# special methods of GaussRadau for SymPy and SymEngine are in __init__
+
+function Base.show(io::IO, basis::GaussRadau{T}) where {T}
+  print(io, "GaussRadau{", T, "}: Nodal Gauss Radau basis of degree ",
+            degree(basis))
+end
+
+@inline includes_boundaries(basis::GaussRadau) = Val{false}()
+@inline includes_left_boundary(basis::GaussRadau) = Val{true}()
+@inline includes_right_boundary(basis::GaussRadau) = Val{false}()
+
+@inline satisfies_sbp(basis::GaussRadau) = Val{true}()
 
 
 """
@@ -294,6 +350,8 @@ function Base.show(io::IO, basis::GaussJacobi{T1, T}) where {T1, T}
 end
 
 @inline includes_boundaries(basis::GaussJacobi) = Val{false}()
+@inline includes_left_boundary(basis::GaussJacobi) = Val{false}()
+@inline includes_right_boundary(basis::GaussJacobi) = Val{false}()
 
 @inline satisfies_sbp(basis::GaussJacobi) = Val{false}()
 
@@ -351,6 +409,8 @@ function ClosedNewtonCotes(p::Int, T=Float64)
 end
 
 @inline includes_boundaries(basis::ClosedNewtonCotes) = Val{true}()
+@inline includes_left_boundary(basis::ClosedNewtonCotes) = Val{true}()
+@inline includes_right_boundary(basis::ClosedNewtonCotes) = Val{true}()
 
 @inline satisfies_sbp(basis::ClosedNewtonCotes) = Val{false}()
 
@@ -405,5 +465,7 @@ function ClenshawCurtis(p::Int, T=Float64)
 end
 
 @inline includes_boundaries(basis::ClenshawCurtis) = Val{true}()
+@inline includes_left_boundary(basis::ClenshawCurtis) = Val{true}()
+@inline includes_right_boundary(basis::ClenshawCurtis) = Val{true}()
 
 @inline satisfies_sbp(basis::ClenshawCurtis) = Val{false}()
