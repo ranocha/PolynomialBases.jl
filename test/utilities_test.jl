@@ -17,11 +17,16 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
         @test Ru[2] ≈ interpolate(+1, u, basis)
 
         @inferred includes_boundaries(basis)
-        if includes_boundaries(basis) == Val{true}()
+        @inferred includes_left_boundary(basis)
+        @inferred includes_right_boundary(basis)
+        if includes_left_boundary(basis) == Val{true}()
             @test Ru[1] ≈ u[1]
-            @test Ru[end] ≈ u[end]
         else
             @test !(Ru[1] ≈ u[1])
+        end
+        if includes_right_boundary(basis) == Val{true}()
+            @test Ru[end] ≈ u[end]
+        else
             @test !(Ru[end] ≈ u[end])
         end
 
