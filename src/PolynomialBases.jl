@@ -310,7 +310,7 @@ function __init__()
     @require SymPy="24249f21-da20-56a4-8eb1-6a02cf4ae2e6" begin
         function GaussRadau(p::Int, T::Type{SymPy.Sym})
             if p == 0
-                nodes   = T[0]
+                nodes   = T[-1]
                 weights = T[2]
             elseif p == 1
                 sqrt_1_3 = sqrt(one(T) / 3)
@@ -333,7 +333,7 @@ function __init__()
     @require SymEngine="123dc426-2d89-5057-bbad-38513e3affd8" begin
         function GaussRadau(p::Int, T::Type{SymEngine.Basic})
             if p == 0
-                nodes   = T[0]
+                nodes   = T[-1]
                 weights = T[2]
             elseif p == 1
                 sqrt_1_3 = sqrt(one(T) / 3)
