@@ -353,7 +353,7 @@ function __init__()
         end
     end
 
-        @require SymPy="24249f21-da20-56a4-8eb1-6a02cf4ae2e6" begin
+    @require SymPy="24249f21-da20-56a4-8eb1-6a02cf4ae2e6" begin
         function GaussRadauRight(p::Int, T::Type{SymPy.Sym})
             if p == 0
                 nodes   = T[1]
