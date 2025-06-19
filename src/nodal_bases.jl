@@ -248,12 +248,12 @@ end
 
 
 """
-    GaussRadau{T}
+    GaussRadauLeft{T}
 
 The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
-with scalar type `T`.
+including the left end point with scalar type `T`.
 """
-@auto_hash_equals struct GaussRadau{T} <: NodalBasis{Line}
+@auto_hash_equals struct GaussRadauLeft{T} <: NodalBasis{Line}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -261,23 +261,23 @@ with scalar type `T`.
     interp_left::Vector{T}
     interp_right::Vector{T}
 
-    function GaussRadau(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
+    function GaussRadauLeft(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
         @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
         new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
     end
 end
 
 """
-    GaussRadau(p::Int, T=Float64)
+    GaussRadauLeft(p::Int, T=Float64)
 
-Generate the `GaussRadau` basis of degree `p` with scalar type `T`.
+Generate the `GaussRadauLeft` basis of degree `p` with scalar type `T`.
 """
-function GaussRadau(p::Int, T=Float64)
+function GaussRadauLeft(p::Int, T=Float64)
     nodes, weights = gauss_radau_nodes_and_weights_impl(p, T)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
-    GaussRadau(nodes, weights, baryweights, D, R[1,:], R[2,:])
+    GaussRadauLeft(nodes, weights, baryweights, D, R[1,:], R[2,:])
 end
 
 function gauss_radau_nodes_and_weights_impl(p, T::DataType)
@@ -285,18 +285,72 @@ function gauss_radau_nodes_and_weights_impl(p, T::DataType)
     nodes, weights
 end
 
-# special methods of GaussRadau for SymPy and SymEngine are in __init__
+# special methods of GaussRadauLeft for SymPy and SymEngine are in __init__
 
-function Base.show(io::IO, basis::GaussRadau{T}) where {T}
-  print(io, "GaussRadau{", T, "}: Nodal Gauss Radau basis of degree ",
+function Base.show(io::IO, basis::GaussRadauLeft{T}) where {T}
+  print(io, "GaussRadauLeft{", T, "}: Nodal left Gauss Radau basis of degree ",
             degree(basis))
 end
 
-@inline includes_boundaries(basis::GaussRadau) = Val{false}()
-@inline includes_left_boundary(basis::GaussRadau) = Val{true}()
-@inline includes_right_boundary(basis::GaussRadau) = Val{false}()
+@inline includes_boundaries(basis::GaussRadauLeft) = Val{false}()
+@inline includes_left_boundary(basis::GaussRadauLeft) = Val{true}()
+@inline includes_right_boundary(basis::GaussRadauLeft) = Val{false}()
 
-@inline satisfies_sbp(basis::GaussRadau) = Val{true}()
+@inline satisfies_sbp(basis::GaussRadauLeft) = Val{true}()
+
+
+"""
+    GaussRadauRight{T}
+
+The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
+including the right end point with scalar type `T`.
+"""
+@auto_hash_equals struct GaussRadauRight{T} <: NodalBasis{Line}
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+    interp_left::Vector{T}
+    interp_right::Vector{T}
+
+    function GaussRadauRight(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
+        new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
+    end
+end
+
+"""
+    GaussRadauRight(p::Int, T=Float64)
+
+Generate the `GaussRadauRight` basis of degree `p` with scalar type `T`.
+"""
+function GaussRadauRight(p::Int, T=Float64)
+    nodes, weights = gauss_radau_nodes_and_weights_right_impl(p, T)
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    R = interpolation_matrix(T[-1, 1], nodes, baryweights)
+    GaussRadauRight(nodes, weights, baryweights, D, R[1,:], R[2,:])
+end
+
+function gauss_radau_nodes_and_weights_right_impl(p, T::DataType)
+    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
+    # `gaussradau` returns the nodes in [-1, 1] always including the left end point,
+    # so we can reverse the weights and negative nodes to include the right end point
+    -reverse(nodes), reverse(weights)
+end
+
+# special methods of GaussRadauRight for SymPy and SymEngine are in __init__
+
+function Base.show(io::IO, basis::GaussRadauRight{T}) where {T}
+  print(io, "GaussRadauRight{", T, "}: Nodal right Gauss Radau basis of degree ",
+            degree(basis))
+end
+
+@inline includes_boundaries(basis::GaussRadauRight) = Val{false}()
+@inline includes_left_boundary(basis::GaussRadauRight) = Val{false}()
+@inline includes_right_boundary(basis::GaussRadauRight) = Val{true}()
+
+@inline satisfies_sbp(basis::GaussRadauRight) = Val{true}()
 
 
 """

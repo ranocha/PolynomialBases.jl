@@ -34,7 +34,7 @@ include("hahn.jl")
 
 # export
 ## types
-export NodalBasis, LobattoLegendre, GaussLegendre, GaussRadau, GaussJacobi,
+export NodalBasis, LobattoLegendre, GaussLegendre, GaussRadauLeft, GaussRadauRight, GaussJacobi,
         ClosedNewtonCotes, ClenshawCurtis
 
 ## mappings
@@ -308,7 +308,7 @@ function __init__()
 
     # GaussRadau
     @require SymPy="24249f21-da20-56a4-8eb1-6a02cf4ae2e6" begin
-        function GaussRadau(p::Int, T::Type{SymPy.Sym})
+        function GaussRadauLeft(p::Int, T::Type{SymPy.Sym})
             if p == 0
                 nodes   = T[-1]
                 weights = T[2]
@@ -326,12 +326,12 @@ function __init__()
             baryweights = SymPy.simplify.(barycentric_weights(nodes))
             D = SymPy.simplify.(derivative_matrix(nodes, baryweights))
             R = interpolation_matrix([-1, 1], nodes, baryweights)
-            GaussRadau(nodes, weights, baryweights, D, R[1,:], R[2,:])
+            GaussRadauLeft(nodes, weights, baryweights, D, R[1,:], R[2,:])
         end
     end
 
     @require SymEngine="123dc426-2d89-5057-bbad-38513e3affd8" begin
-        function GaussRadau(p::Int, T::Type{SymEngine.Basic})
+        function GaussRadauLeft(p::Int, T::Type{SymEngine.Basic})
             if p == 0
                 nodes   = T[-1]
                 weights = T[2]
@@ -349,7 +349,53 @@ function __init__()
             baryweights = SymEngine.expand.(barycentric_weights(nodes))
             D = SymEngine.expand.(derivative_matrix(nodes, baryweights))
             R = interpolation_matrix([-1, 1], nodes, baryweights)
-            GaussRadau(nodes, weights, baryweights, D, R[1,:], R[2,:])
+            GaussRadauLeft(nodes, weights, baryweights, D, R[1,:], R[2,:])
+        end
+    end
+
+        @require SymPy="24249f21-da20-56a4-8eb1-6a02cf4ae2e6" begin
+        function GaussRadauRight(p::Int, T::Type{SymPy.Sym})
+            if p == 0
+                nodes   = T[1]
+                weights = T[2]
+            elseif p == 1
+                sqrt_1_3 = sqrt(one(T) / 3)
+                nodes   = T[-sqrt_1_3, 1]
+                weights = T[3//2, 1//2]
+            elseif p == 2
+                sqrt_6 = sqrt(T(6))
+                nodes   = T[-1//5*(1 + sqrt_6), -1//5*(1 - sqrt_6), 1]
+                weights = T[1//18*(16 - sqrt_6), 1//18*(16 + sqrt_6), 2//9]
+            else
+                throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
+            end
+            baryweights = SymPy.simplify.(barycentric_weights(nodes))
+            D = SymPy.simplify.(derivative_matrix(nodes, baryweights))
+            R = interpolation_matrix([-1, 1], nodes, baryweights)
+            GaussRadauRight(nodes, weights, baryweights, D, R[1,:], R[2,:])
+        end
+    end
+
+    @require SymEngine="123dc426-2d89-5057-bbad-38513e3affd8" begin
+        function GaussRadauRight(p::Int, T::Type{SymEngine.Basic})
+            if p == 0
+                nodes   = T[1]
+                weights = T[2]
+            elseif p == 1
+                sqrt_1_3 = sqrt(one(T) / 3)
+                nodes   = T[-sqrt_1_3, 1]
+                weights = T[3//2, 1//2]
+            elseif p == 2
+                sqrt_6 = sqrt(T(6))
+                nodes   = T[-1//5*(1 + sqrt_6), -1//5*(1 - sqrt_6), 1]
+                weights = T[1//18*(16 - sqrt_6), 1//18*(16 + sqrt_6), 2//9]
+            else
+                throw(ArgumentError("Polynomial degree p = $p not implemented yet."))
+            end
+            baryweights = SymEngine.expand.(barycentric_weights(nodes))
+            D = SymEngine.expand.(derivative_matrix(nodes, baryweights))
+            R = interpolation_matrix([-1, 1], nodes, baryweights)
+            GaussRadauRight(nodes, weights, baryweights, D, R[1,:], R[2,:])
         end
     end
 end
