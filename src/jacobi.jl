@@ -124,4 +124,4 @@ function jacobi_vandermonde(nodes::AbstractVector, α, β)
     V
 end
 
-jacobi_vandermonde(basis::NodalBasis{Line}, α, β) = jacobi_vandermonde(basis.nodes, α, β)
+jacobi_vandermonde(basis::NodalBasis{Line}, α, β) = jacobi_vandermonde(grid(basis), α, β)

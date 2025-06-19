@@ -65,7 +65,7 @@ export legendre, legendre_vandermonde, legendre_D, legendre_M,
 export hahn
 
 ## other utilities
-export utility_matrices,
+export utility_matrices, grid, derivative_matrix, mass_matrix, mass_matrix_boundary,
        includes_boundaries, includes_left_boundary, includes_right_boundary,
        satisfies_sbp
 

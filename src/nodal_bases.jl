@@ -3,7 +3,7 @@
 
 Return the polynomial degree used by `basis`.
 """
-Base.@pure degree(basis::NodalBasis{Line}) = length(basis.nodes)-1
+Base.@pure degree(basis::NodalBasis{Line}) = length(grid(basis))-1
 
 
 """
@@ -16,7 +16,7 @@ Perform the change of basis for the coefficients `values` from `src_basis` to
 function change_basis(dest_basis::NodalBasis{Domain},
                       values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
     @boundscheck begin
-        @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
+        @assert length(grid(dest_basis)) == length(grid(src_basis)) == length(values)
     end
     ret = similar(values)
     @inbounds change_basis!(ret, dest_basis, values, src_basis)
@@ -33,10 +33,10 @@ Perform the change of basis for the coefficients `values` from `src_basis` to
 function change_basis!(ret, dest_basis::NodalBasis{Domain},
                        values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
     @boundscheck begin
-        @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
+        @assert length(grid(dest_basis)) == length(grid(src_basis)) == length(values)
         @assert length(values) == length(ret)
     end
-    interpolate!(ret, dest_basis.nodes, values, src_basis)
+    interpolate!(ret, grid(dest_basis), values, src_basis)
     nothing
 end
 
@@ -48,9 +48,9 @@ Compute the nodal values of the function `u` at the nodes corresponding to the
 nodal basis `basis`.
 """
 function compute_coefficients(u, basis::NodalBasis{Line})
-    xmin = first(basis.nodes)
-    xmax = last(basis.nodes)
-    uval = Array{typeof(u((xmin+xmax)/2))}(undef, length(basis.nodes))
+    xmin = first(grid(basis))
+    xmax = last(grid(basis))
+    uval = Array{typeof(u((xmin+xmax)/2))}(undef, length(grid(basis)))
     compute_coefficients!(uval, u, basis)
     uval
 end
@@ -62,20 +62,20 @@ Compute the nodal values of the function `u` at the nodes corresponding to the
 nodal basis `basis` and store the result in `uval`.
 """
 function compute_coefficients!(uval::AbstractVector, u, basis::NodalBasis{Line})
-    uval .= u.(basis.nodes)
+    uval .= u.(grid(basis))
     nothing
 end
 
 
 """
-    evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
+    evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(grid(basis)))
 
 Evaluate the coefficients `u` of the nodal basis `basis` at `npoints` equally
 spaced nodes. Returns `xplot, uplot`, where `xplot` contains the equally spaced
 nodes and `uplot` the corresponding values of `u`.
 """
-function evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
-    xplot = Array{eltype(basis.nodes)}(undef, npoints)
+function evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(grid(basis)))
+    xplot = Array{eltype(grid(basis))}(undef, npoints)
     uplot = Array{eltype(u)}(undef, npoints)
 
     evaluate_coefficients!(xplot, uplot, u, basis)
@@ -116,13 +116,45 @@ reconstruction using summation-by-parts operators, cf. Ranocha, Öffner, Sonar
 Journal of Computational Physics 311, 299-328.
 """
 function utility_matrices(basis::NodalBasis{Line})
-    D = basis.D
-    M = Diagonal(basis.weights)
+    D = derivative_matrix(basis)
+    M = mass_matrix(basis)
     R = interpolation_matrix([-1,1], basis)
     B = Diagonal([-1,1])
     MinvRtB = M \ R' * B
 
     D, M, R, B, MinvRtB
+end
+
+"""
+    grid(basis::NodalBasis{Line})
+
+Return the grid of nodes associated to the nodal basis `basis`.
+"""
+grid(basis::NodalBasis{Line}) = basis.nodes
+
+"""
+    derivative_matrix(basis::NodalBasis{Line})
+
+Return the derivative matrix associated to the nodal basis `basis`.
+"""
+derivative_matrix(basis::NodalBasis{Line}) = basis.D
+
+"""
+    mass_matrix(basis::NodalBasis{Line})
+
+Create the diagonal mass matrix associated to the nodal basis `basis`.
+"""
+mass_matrix(basis::NodalBasis{Line}) = Diagonal(basis.weights)
+
+"""
+    mass_matrix_boundary(basis::NodalBasis{Line})
+
+Create the mass matrix at the boundary associated to the nodal basis `basis`.
+"""
+function mass_matrix_boundary(basis::NodalBasis{Line})
+	R = interpolation_matrix([-1,1], basis)
+	B = Diagonal([-1,1])
+	return R' * B * R
 end
 
 
