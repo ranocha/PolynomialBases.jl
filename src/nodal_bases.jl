@@ -149,7 +149,10 @@ mass_matrix(basis::NodalBasis{Line}) = Diagonal(basis.weights)
 """
     mass_matrix_boundary(basis::NodalBasis{Line})
 
-Create the mass matrix at the boundary associated to the nodal basis `basis`.
+Create the mass matrix at the boundary associated to the nodal basis `basis`
+scaled by the boundary normal, i.e., for a function `u` defined in [-1, 1]
+with discrete values `uu` evaluated at `grid(basis)`, `sum(mass_matrix_boundary(basis) * uu)` is
+an approximation of `u(1) - u(-1)`.
 """
 function mass_matrix_boundary(basis::NodalBasis{Line})
     R = interpolation_matrix([-1,1], basis)
