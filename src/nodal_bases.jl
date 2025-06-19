@@ -152,9 +152,9 @@ mass_matrix(basis::NodalBasis{Line}) = Diagonal(basis.weights)
 Create the mass matrix at the boundary associated to the nodal basis `basis`.
 """
 function mass_matrix_boundary(basis::NodalBasis{Line})
-	R = interpolation_matrix([-1,1], basis)
-	B = Diagonal([-1,1])
-	return R' * B * R
+    R = interpolation_matrix([-1,1], basis)
+    B = Diagonal([-1,1])
+    return R' * B * R
 end
 
 
