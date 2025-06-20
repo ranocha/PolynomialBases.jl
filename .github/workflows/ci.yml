@@ -17,10 +17,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # test on all OS with Julia LTS and additionally on linux
-        # with current Julia release
+        # test on all OS with Julia LTS and additionally on Linux
+        # with previous LTS and current Julia release
         version:
-          - '1.6'
+          - '1.10'
           # - 'nightly'
         os:
           - ubuntu-latest
@@ -29,6 +29,9 @@ jobs:
         arch:
           - x64
         include:
+          - version: '1.6'
+            os: ubuntu-latest
+            arch: x64
           - version: '1'
             os: ubuntu-latest
             arch: x64
