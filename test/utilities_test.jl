@@ -32,7 +32,7 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
 
         # SBP property
         if satisfies_sbp(basis) == Val{true}()
-            @test M*D + D'*M ≈ R'*B*R
+            @test M*D + D'*M ≈ mass_matrix_boundary(basis)
         end
     end
 end

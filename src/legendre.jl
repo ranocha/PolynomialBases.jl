@@ -173,7 +173,7 @@ function legendre_vandermonde(nodes::AbstractVector)
     V
 end
 
-legendre_vandermonde(basis::NodalBasis{Line}) = legendre_vandermonde(basis.nodes)
+legendre_vandermonde(basis::NodalBasis{Line}) = legendre_vandermonde(grid(basis))
 
 
 """
