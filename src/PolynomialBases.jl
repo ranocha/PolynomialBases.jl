@@ -15,8 +15,8 @@ using SpecialFunctions: gamma
 abstract type AbstractDomain{Dim} end
 struct Line <: AbstractDomain{1} end
 
-abstract type AbstractBasis{Domain} end
-abstract type NodalBasis{Domain} <: AbstractBasis{Domain} end
+abstract type AbstractBasis{Domain, T} end
+abstract type NodalBasis{Domain, T} <: AbstractBasis{Domain, T} end
 
 
 # source files

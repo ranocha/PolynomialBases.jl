@@ -1,3 +1,5 @@
+Base.eltype(::NodalBasis{Line, T}) where {T} = T
+
 """
     degree(basis::NodalBasis{Line})
 
@@ -172,7 +174,7 @@ Base.broadcastable(basis::NodalBasis) = Ref(basis)
 The nodal basis corresponding to Legendre Gauss Lobatto quadrature in [-1,1]
 with scalar type `T`.
 """
-@auto_hash_equals struct LobattoLegendre{T} <: NodalBasis{Line}
+@auto_hash_equals struct LobattoLegendre{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -231,7 +233,7 @@ end
 The nodal basis corresponding to Legendre Gauss quadrature in [-1,1]
 with scalar type `T`.
 """
-@auto_hash_equals struct GaussLegendre{T} <: NodalBasis{Line}
+@auto_hash_equals struct GaussLegendre{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -288,7 +290,7 @@ end
 The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
 including the left end point with scalar type `T`.
 """
-@auto_hash_equals struct GaussRadauLeft{T} <: NodalBasis{Line}
+@auto_hash_equals struct GaussRadauLeft{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -340,7 +342,7 @@ end
 The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
 including the right end point with scalar type `T`.
 """
-@auto_hash_equals struct GaussRadauRight{T} <: NodalBasis{Line}
+@auto_hash_equals struct GaussRadauRight{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -394,7 +396,7 @@ end
 The nodal basis corresponding to Jacobi Gauss quadrature in [-1,1]
 with parameters `α`, `β` and scalar type `T`.
 """
-@auto_hash_equals struct GaussJacobi{T1<:Real, T<:Real} <: NodalBasis{Line}
+@auto_hash_equals struct GaussJacobi{T1<:Real, T<:Real} <: NodalBasis{Line, T}
     α::T1
     β::T1
     nodes::Vector{T}
@@ -451,7 +453,7 @@ end
 The nodal basis corresponding to the closed Newton Cotes quadrature in [-1,1]
 with scalar type `T`.
 """
-@auto_hash_equals struct ClosedNewtonCotes{T} <: NodalBasis{Line}
+@auto_hash_equals struct ClosedNewtonCotes{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -510,7 +512,7 @@ end
 The nodal basis corresponding to the Clenshaw Curtis quadrature in [-1,1] with
 scalar type `T`.
 """
-@auto_hash_equals struct ClenshawCurtis{T} <: NodalBasis{Line}
+@auto_hash_equals struct ClenshawCurtis{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
