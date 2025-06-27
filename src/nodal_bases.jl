@@ -141,6 +141,8 @@ Return the derivative matrix associated to the nodal basis `basis`.
 """
 derivative_matrix(basis::NodalBasis{Line}) = basis.D
 
+Base.Matrix(basis::NodalBasis{Line}) = basis.D
+
 """
     mass_matrix(basis::NodalBasis{Line})
 
