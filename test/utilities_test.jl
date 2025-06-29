@@ -7,9 +7,11 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
         basis = basis_type(p, T)
         @inferred basis_type(p, T)
         @test eltype(basis.nodes) == T
+        @test eltype(basis) == T
         @test basis == basis_type(p, T)
         u = ufunc.(basis.nodes)
         D, M, R, B, MinvRtB = utility_matrices(basis)
+        @test Matrix(basis) == D
 
         @test integrate(u, basis) ≈ sum(M * u)
         Ru = R*u
