@@ -42,8 +42,8 @@ for p in 0:8
     V = legendre_vandermonde(basis)
 
     Dhat = legendre_D(p)
-    @test basis.D ≈ V*Dhat/V atol=1.e-13
+    @test derivative_matrix(basis) ≈ V*Dhat/V atol=1.e-13
 
     Mhat = legendre_M(p)
-    @test Diagonal(basis.weights) ≈ V'\Mhat/V atol=1.e-13
+    @test mass_matrix(basis) ≈ V'\Mhat/V atol=1.e-13
 end

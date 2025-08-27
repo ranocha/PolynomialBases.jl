@@ -1,9 +1,11 @@
+Base.eltype(::NodalBasis{Line, T}) where {T} = T
+
 """
     degree(basis::NodalBasis{Line})
 
 Return the polynomial degree used by `basis`.
 """
-Base.@pure degree(basis::NodalBasis{Line}) = length(basis.nodes)-1
+Base.@pure degree(basis::NodalBasis{Line}) = length(grid(basis))-1
 
 
 """
@@ -16,7 +18,7 @@ Perform the change of basis for the coefficients `values` from `src_basis` to
 function change_basis(dest_basis::NodalBasis{Domain},
                       values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
     @boundscheck begin
-        @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
+        @assert length(grid(dest_basis)) == length(grid(src_basis)) == length(values)
     end
     ret = similar(values)
     @inbounds change_basis!(ret, dest_basis, values, src_basis)
@@ -33,10 +35,10 @@ Perform the change of basis for the coefficients `values` from `src_basis` to
 function change_basis!(ret, dest_basis::NodalBasis{Domain},
                        values, src_basis::NodalBasis{Domain}) where {Domain<:AbstractDomain}
     @boundscheck begin
-        @assert length(dest_basis.nodes) == length(src_basis.nodes) == length(values)
+        @assert length(grid(dest_basis)) == length(grid(src_basis)) == length(values)
         @assert length(values) == length(ret)
     end
-    interpolate!(ret, dest_basis.nodes, values, src_basis)
+    interpolate!(ret, grid(dest_basis), values, src_basis)
     nothing
 end
 
@@ -48,9 +50,9 @@ Compute the nodal values of the function `u` at the nodes corresponding to the
 nodal basis `basis`.
 """
 function compute_coefficients(u, basis::NodalBasis{Line})
-    xmin = first(basis.nodes)
-    xmax = last(basis.nodes)
-    uval = Array{typeof(u((xmin+xmax)/2))}(undef, length(basis.nodes))
+    xmin = first(grid(basis))
+    xmax = last(grid(basis))
+    uval = Array{typeof(u((xmin+xmax)/2))}(undef, length(grid(basis)))
     compute_coefficients!(uval, u, basis)
     uval
 end
@@ -62,20 +64,20 @@ Compute the nodal values of the function `u` at the nodes corresponding to the
 nodal basis `basis` and store the result in `uval`.
 """
 function compute_coefficients!(uval::AbstractVector, u, basis::NodalBasis{Line})
-    uval .= u.(basis.nodes)
+    uval .= u.(grid(basis))
     nothing
 end
 
 
 """
-    evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
+    evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(grid(basis)))
 
 Evaluate the coefficients `u` of the nodal basis `basis` at `npoints` equally
 spaced nodes. Returns `xplot, uplot`, where `xplot` contains the equally spaced
 nodes and `uplot` the corresponding values of `u`.
 """
-function evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(basis.nodes))
-    xplot = Array{eltype(basis.nodes)}(undef, npoints)
+function evaluate_coefficients(u, basis::NodalBasis{Line}, npoints=2*length(grid(basis)))
+    xplot = Array{eltype(grid(basis))}(undef, npoints)
     uplot = Array{eltype(u)}(undef, npoints)
 
     evaluate_coefficients!(xplot, uplot, u, basis)
@@ -116,13 +118,50 @@ reconstruction using summation-by-parts operators, cf. Ranocha, Öffner, Sonar
 Journal of Computational Physics 311, 299-328.
 """
 function utility_matrices(basis::NodalBasis{Line})
-    D = basis.D
-    M = Diagonal(basis.weights)
+    D = derivative_matrix(basis)
+    M = mass_matrix(basis)
     R = interpolation_matrix([-1,1], basis)
     B = Diagonal([-1,1])
     MinvRtB = M \ R' * B
 
     D, M, R, B, MinvRtB
+end
+
+"""
+    grid(basis::NodalBasis{Line})
+
+Return the grid of nodes associated to the nodal basis `basis`.
+"""
+grid(basis::NodalBasis{Line}) = basis.nodes
+
+"""
+    derivative_matrix(basis::NodalBasis{Line})
+
+Return the derivative matrix associated to the nodal basis `basis`.
+"""
+derivative_matrix(basis::NodalBasis{Line}) = basis.D
+
+Base.Matrix(basis::NodalBasis{Line}) = copy(derivative_matrix(basis))
+
+"""
+    mass_matrix(basis::NodalBasis{Line})
+
+Create the diagonal mass matrix associated to the nodal basis `basis`.
+"""
+mass_matrix(basis::NodalBasis{Line}) = Diagonal(basis.weights)
+
+"""
+    mass_matrix_boundary(basis::NodalBasis{Line})
+
+Create the mass matrix at the boundary associated to the nodal basis `basis`
+scaled by the outer unit normal, i.e., for a function `u` defined in [-1, 1]
+with discrete values `uu` evaluated at `grid(basis)`, `sum(mass_matrix_boundary(basis) * uu)` is
+an approximation of `u(1) - u(-1)`.
+"""
+function mass_matrix_boundary(basis::NodalBasis{Line})
+    R = interpolation_matrix([-1,1], basis)
+    B = Diagonal([-1,1])
+    return R' * B * R
 end
 
 
@@ -137,7 +176,7 @@ Base.broadcastable(basis::NodalBasis) = Ref(basis)
 The nodal basis corresponding to Legendre Gauss Lobatto quadrature in [-1,1]
 with scalar type `T`.
 """
-@auto_hash_equals struct LobattoLegendre{T} <: NodalBasis{Line}
+@auto_hash_equals struct LobattoLegendre{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -184,6 +223,8 @@ function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
 end
 
 @inline includes_boundaries(basis::LobattoLegendre) = Val{true}()
+@inline includes_left_boundary(basis::LobattoLegendre) = Val{true}()
+@inline includes_right_boundary(basis::LobattoLegendre) = Val{true}()
 
 @inline satisfies_sbp(basis::LobattoLegendre) = Val{true}()
 
@@ -194,7 +235,7 @@ end
 The nodal basis corresponding to Legendre Gauss quadrature in [-1,1]
 with scalar type `T`.
 """
-@auto_hash_equals struct GaussLegendre{T} <: NodalBasis{Line}
+@auto_hash_equals struct GaussLegendre{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -239,8 +280,116 @@ function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
 end
 
 @inline includes_boundaries(basis::GaussLegendre) = Val{false}()
+@inline includes_left_boundary(basis::GaussLegendre) = Val{false}()
+@inline includes_right_boundary(basis::GaussLegendre) = Val{false}()
 
 @inline satisfies_sbp(basis::GaussLegendre) = Val{true}()
+
+
+"""
+    GaussRadauLeft{T}
+
+The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
+including the left end point with scalar type `T`.
+"""
+@auto_hash_equals struct GaussRadauLeft{T} <: NodalBasis{Line, T}
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+    interp_left::Vector{T}
+    interp_right::Vector{T}
+
+    function GaussRadauLeft(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
+        new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
+    end
+end
+
+"""
+    GaussRadauLeft(p::Int, T=Float64)
+
+Generate the `GaussRadauLeft` basis of degree `p` with scalar type `T`.
+"""
+function GaussRadauLeft(p::Int, T=Float64)
+    nodes, weights = gauss_radau_nodes_and_weights_impl(p, T)
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    R = interpolation_matrix(T[-1, 1], nodes, baryweights)
+    GaussRadauLeft(nodes, weights, baryweights, D, R[1,:], R[2,:])
+end
+
+function gauss_radau_nodes_and_weights_impl(p, T::DataType)
+    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
+    nodes, weights
+end
+
+# special methods of GaussRadauLeft for SymPy and SymEngine are in __init__
+
+function Base.show(io::IO, basis::GaussRadauLeft{T}) where {T}
+  print(io, "GaussRadauLeft{", T, "}: Nodal left Gauss Radau basis of degree ",
+            degree(basis))
+end
+
+@inline includes_boundaries(basis::GaussRadauLeft) = Val{false}()
+@inline includes_left_boundary(basis::GaussRadauLeft) = Val{true}()
+@inline includes_right_boundary(basis::GaussRadauLeft) = Val{false}()
+
+@inline satisfies_sbp(basis::GaussRadauLeft) = Val{true}()
+
+
+"""
+    GaussRadauRight{T}
+
+The nodal basis corresponding to Radau Gauss quadrature in [-1,1]
+including the right end point with scalar type `T`.
+"""
+@auto_hash_equals struct GaussRadauRight{T} <: NodalBasis{Line, T}
+    nodes::Vector{T}
+    weights::Vector{T}
+    baryweights::Vector{T}
+    D::Matrix{T}
+    interp_left::Vector{T}
+    interp_right::Vector{T}
+
+    function GaussRadauRight(nodes::Vector{T}, weights::Vector{T}, baryweights::Vector{T}, D::Matrix{T}, interp_left::Vector{T}, interp_right::Vector{T}) where {T}
+        @argcheck length(nodes) == length(weights) == length(baryweights) == size(D,1) == size(D,2) == length(interp_left) == length(interp_right)
+        new{T}(nodes, weights, baryweights, D, interp_left, interp_right)
+    end
+end
+
+"""
+    GaussRadauRight(p::Int, T=Float64)
+
+Generate the `GaussRadauRight` basis of degree `p` with scalar type `T`.
+"""
+function GaussRadauRight(p::Int, T=Float64)
+    nodes, weights = gauss_radau_nodes_and_weights_right_impl(p, T)
+    baryweights = barycentric_weights(nodes)
+    D = derivative_matrix(nodes, baryweights)
+    R = interpolation_matrix(T[-1, 1], nodes, baryweights)
+    GaussRadauRight(nodes, weights, baryweights, D, R[1,:], R[2,:])
+end
+
+function gauss_radau_nodes_and_weights_right_impl(p, T::DataType)
+    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
+    # `gaussradau` returns the nodes in [-1, 1] always including the left end point,
+    # so we can reverse the weights and negative nodes to include the right end point
+    -reverse(nodes), reverse(weights)
+end
+
+# special methods of GaussRadauRight for SymPy and SymEngine are in __init__
+
+function Base.show(io::IO, basis::GaussRadauRight{T}) where {T}
+  print(io, "GaussRadauRight{", T, "}: Nodal right Gauss Radau basis of degree ",
+            degree(basis))
+end
+
+@inline includes_boundaries(basis::GaussRadauRight) = Val{false}()
+@inline includes_left_boundary(basis::GaussRadauRight) = Val{false}()
+@inline includes_right_boundary(basis::GaussRadauRight) = Val{true}()
+
+@inline satisfies_sbp(basis::GaussRadauRight) = Val{true}()
 
 
 """
@@ -249,7 +398,7 @@ end
 The nodal basis corresponding to Jacobi Gauss quadrature in [-1,1]
 with parameters `α`, `β` and scalar type `T`.
 """
-@auto_hash_equals struct GaussJacobi{T1<:Real, T<:Real} <: NodalBasis{Line}
+@auto_hash_equals struct GaussJacobi{T1<:Real, T<:Real} <: NodalBasis{Line, T}
     α::T1
     β::T1
     nodes::Vector{T}
@@ -294,6 +443,8 @@ function Base.show(io::IO, basis::GaussJacobi{T1, T}) where {T1, T}
 end
 
 @inline includes_boundaries(basis::GaussJacobi) = Val{false}()
+@inline includes_left_boundary(basis::GaussJacobi) = Val{false}()
+@inline includes_right_boundary(basis::GaussJacobi) = Val{false}()
 
 @inline satisfies_sbp(basis::GaussJacobi) = Val{false}()
 
@@ -304,7 +455,7 @@ end
 The nodal basis corresponding to the closed Newton Cotes quadrature in [-1,1]
 with scalar type `T`.
 """
-@auto_hash_equals struct ClosedNewtonCotes{T} <: NodalBasis{Line}
+@auto_hash_equals struct ClosedNewtonCotes{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -351,6 +502,8 @@ function ClosedNewtonCotes(p::Int, T=Float64)
 end
 
 @inline includes_boundaries(basis::ClosedNewtonCotes) = Val{true}()
+@inline includes_left_boundary(basis::ClosedNewtonCotes) = Val{true}()
+@inline includes_right_boundary(basis::ClosedNewtonCotes) = Val{true}()
 
 @inline satisfies_sbp(basis::ClosedNewtonCotes) = Val{false}()
 
@@ -361,7 +514,7 @@ end
 The nodal basis corresponding to the Clenshaw Curtis quadrature in [-1,1] with
 scalar type `T`.
 """
-@auto_hash_equals struct ClenshawCurtis{T} <: NodalBasis{Line}
+@auto_hash_equals struct ClenshawCurtis{T} <: NodalBasis{Line, T}
     nodes::Vector{T}
     weights::Vector{T}
     baryweights::Vector{T}
@@ -405,5 +558,7 @@ function ClenshawCurtis(p::Int, T=Float64)
 end
 
 @inline includes_boundaries(basis::ClenshawCurtis) = Val{true}()
+@inline includes_left_boundary(basis::ClenshawCurtis) = Val{true}()
+@inline includes_right_boundary(basis::ClenshawCurtis) = Val{true}()
 
 @inline satisfies_sbp(basis::ClenshawCurtis) = Val{false}()

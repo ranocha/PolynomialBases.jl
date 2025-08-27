@@ -78,6 +78,6 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
         xplot = range(-1, stop=1, length=100)
         u1 = derivative_at(xplot, u, basis)
         u2 = interpolate(xplot, basis.D*u, basis)
-        @test norm(u1 - u2, Inf) < 5.f-3
+        @test norm(u1 - u2, Inf) < 1.5f-2
     end
 end
