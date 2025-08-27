@@ -10,5 +10,5 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [compat]
 ExplicitImports = "1.7"
 StaticArrays = "1"
-SymEngine = "0.8, 0.9, 0.10, 0.11, 0.12"
+SymEngine = "0.8, 0.9, 0.10, 0.11, 0.12, 0.13"
 SymPy = "1"
