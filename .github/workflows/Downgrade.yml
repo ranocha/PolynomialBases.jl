@@ -34,6 +34,29 @@ jobs:
           skip: LinearAlgebra,Test
           projects: ., test
           mode: forcedeps
+      - name: Fix Conda.jl/PyCall.jl/SymPy.jl build
+        env:
+          PYTHON: ""
+        shell: julia --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.activate("test")
+          Pkg.develop(Pkg.PackageSpec(path=pwd()))
+          println("Try instantiating the test environment")
+          try
+            Pkg.instantiate()
+            println("Successfully instantiated the test environment")
+          catch e
+            display(e)
+          end
+          println("Try building SymPy")
+          try
+            Pkg.build("SymPy")
+            import SymPy
+            println("Successfully built SymPy")
+          catch e
+            display(e)
+          end
       # We run the tests manually instead of using julia-action/julia-builpkg and julia-action/julia-runtest or `Pkg.test`
       # because otherwise the downgraded Manifest.toml is not used in the tests under julia <v1.12
       # see also https://github.com/julia-actions/julia-downgrade-compat/blob/00f940b7be2b50389571ed016d603be561649103/README.md#L89
