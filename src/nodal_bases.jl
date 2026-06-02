@@ -215,8 +215,6 @@ function lobatto_legendre_nodes_and_weights_impl(p, T::DataType)
     nodes, weights
 end
 
-# special methods of LobattoLegendre for SymPy and SymEngine are in __init__
-
 function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
   print(io, "LobattoLegendre{", T, "}: Nodal Lobatto Legendre basis of degree ",
             degree(basis))
@@ -272,8 +270,6 @@ function gauss_legendre_nodes_and_weights_impl(p, T::DataType)
     nodes, weights
 end
 
-# special methods of GaussLegendre for SymPy and SymEngine are in __init__
-
 function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
   print(io, "GaussLegendre{", T, "}: Nodal Gauss Legendre basis of degree ",
             degree(basis))
@@ -323,8 +319,6 @@ function gauss_radau_nodes_and_weights_impl(p, T::DataType)
     nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
     nodes, weights
 end
-
-# special methods of GaussRadauLeft for SymPy and SymEngine are in __init__
 
 function Base.show(io::IO, basis::GaussRadauLeft{T}) where {T}
   print(io, "GaussRadauLeft{", T, "}: Nodal left Gauss Radau basis of degree ",
@@ -378,8 +372,6 @@ function gauss_radau_nodes_and_weights_right_impl(p, T::DataType)
     -reverse(nodes), reverse(weights)
 end
 
-# special methods of GaussRadauRight for SymPy and SymEngine are in __init__
-
 function Base.show(io::IO, basis::GaussRadauRight{T}) where {T}
   print(io, "GaussRadauRight{", T, "}: Nodal right Gauss Radau basis of degree ",
             degree(basis))
@@ -426,7 +418,7 @@ function GaussJacobi(p::Int, α, β, T=Float64)
 end
 
 function gauss_jacobi_nodes_and_weights_impl(p, α, β, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, α, β)
+    nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, Float64(α), Float64(β))
     nodes, weights
 end
 
