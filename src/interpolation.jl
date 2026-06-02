@@ -128,8 +128,6 @@ function interpolation_matrix!(mat, dest, src, baryweights)
     nothing
 end
 
-# special methods of interpolation_matrix for SymPy and SymEngine are in __init__
-
 function interpolation_matrix(dest, basis::NodalBasis)
     @unpack nodes, baryweights = basis
     interpolation_matrix(dest, nodes, baryweights)
