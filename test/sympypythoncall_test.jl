@@ -1,10 +1,6 @@
 using Test, PolynomialBases
 
-# PyCall and PythonCall cannot share the same Python interpreter if PyCall
-# initialized it first; skip these tests when PyCall is already loaded.
-pycall_loaded = any(k -> k.name == "PyCall", keys(Base.loaded_modules))
-
-if !haskey(ENV, "JULIA_PKGEVAL") && !pycall_loaded
+if !haskey(ENV, "JULIA_PKGEVAL")
   import SymPyPythonCall
 
   tol = 5.e-15
