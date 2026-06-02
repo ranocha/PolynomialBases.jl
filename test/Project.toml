@@ -10,7 +10,7 @@ SymPyPythonCall = "bc8888f7-b21e-4b7c-a06a-5d9c9496438c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-ExplicitImports = "1.7"
+ExplicitImports = "1.13"
 StaticArrays = "1"
 SymEngine = "0.8.3, 0.9, 0.10, 0.11, 0.12, 0.13"
 SymPy = "1.0.33"
