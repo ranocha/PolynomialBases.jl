@@ -1,0 +1,57 @@
+name: Downgrade
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        julia-version: ['1.10']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: x64
+      - name: Run julia version info
+        run: julia --project -e 'import Pkg; Pkg.status()'
+      - name: Run downgrade
+        uses: julia-actions/julia-downgrade-compat@v2
+        with:
+          skip: LinearAlgebra,Test
+          projects: ., test
+          mode: forcedeps
+      # We run the tests manually instead of using julia-action/julia-builpkg and julia-action/julia-runtest or `Pkg.test`
+      # because otherwise the downgraded Manifest.toml is not used in the tests under julia <v1.12
+      # see also https://github.com/julia-actions/julia-downgrade-compat/blob/00f940b7be2b50389571ed016d603be561649103/README.md#L89
+      - name: Run tests
+        run: |
+          julia --project=test --color=yes -e '
+            import Pkg
+            Pkg.develop(Pkg.PackageSpec(path=pwd()))
+            # First pass: download packages; SymPy may fail to precompile since
+            # Conda has not been built yet - that is expected and handled below.
+            try; Pkg.instantiate(); catch; end
+            # Build Conda and PyCall explicitly so that SymPy can precompile.
+            try; Pkg.build("Conda"); catch; end
+            try; Pkg.build("PyCall"); catch; end
+            # Second pass: Conda/PyCall are now built, SymPy should precompile.
+            Pkg.instantiate()
+            Pkg.status(; mode = Pkg.PKGMODE_MANIFEST)
+            include("test/runtests.jl")
+          '
+        env:
+          PYTHON: ""

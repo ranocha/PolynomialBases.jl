@@ -3,4 +3,6 @@
 **/*.jl.mem
 **/.ipynb_checkpoints/
 **/Manifest.toml
-
+*.code-workspace
+**/run*/
+**/.CondaPkg/

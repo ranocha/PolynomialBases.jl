@@ -12,8 +12,10 @@ A library of functions for polynomial bases used in spectral element methods usi
 [FastGaussQuadrature.jl](https://github.com/ajt60gaibb/FastGaussQuadrature.jl) for `Float64` and root finding
 via the Newton algorithm for other scalar types (such as `BigFloat`). The algorithms for interpolation and
 differentiation use barycentric weights as described in the book "Implementing Spectral Methods for PDEs"
-by David Kopriva. If [SymPy.jl](https://github.com/JuliaPy/SymPy.jl)/[SymEngine.jl](https://github.com/symengine/symengine)
-is loaded, symbolic computations using `SymPy.Sym`/`SymEngine.Basic` are supported.
+by David Kopriva. If [SymPy.jl](https://github.com/JuliaPy/SymPy.jl),
+[SymPyPythonCall.jl](https://github.com/jverzani/SymPyPythonCall.jl), or
+[SymEngine.jl](https://github.com/symengine/SymEngine.jl)
+is loaded, symbolic computations using `SymPy.Sym`/`SymPyPythonCall.Sym`/`SymEngine.Basic` are supported.
 
 A brief tutorial is given as
 [notebook](http://nbviewer.ipython.org/github/ranocha/PolynomialBases.jl/blob/main/notebooks/Tutorial.ipynb).
