@@ -5,7 +5,7 @@ using PolynomialBases
 # Python interpreter before loading SymPy. This makes both backends share one
 # Python process and avoids the "initialization of math did not return an
 # extension module" error when both are used in the same session.
-# See https://juliapy.github.io/PythonCall.jl/stable/pycall/#Tips
+# See https://juliapy.github.io/PythonCall.jl/stable/faq/#faq-pycall
 # and https://github.com/JuliaPy/PyCall.jl/issues/1056
 if !haskey(ENV, "JULIA_PKGEVAL")
     using SymPyPythonCall: SymPyPythonCall

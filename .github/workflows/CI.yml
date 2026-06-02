@@ -27,8 +27,6 @@ jobs:
           - macOS-latest
           - windows-latest
         include:
-          - version: '1.10'
-            os: ubuntu-latest
           - version: '1'
             os: ubuntu-latest
     steps:
