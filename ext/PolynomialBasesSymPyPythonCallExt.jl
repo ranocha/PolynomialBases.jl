@@ -6,9 +6,9 @@ using PolynomialBases: PolynomialBases, barycentric_weights, derivative_matrix,
 using SymPyPythonCall: SymPyPythonCall
 
 # SymPyPythonCall.Sym is the UnionAll Sym{T} where T; the concrete type
-# used at runtime is Sym{PythonCall.Py}. Using SymPyPythonCall._PyType avoids
-# a direct dependency on PythonCall.
-const _Sym = SymPyPythonCall.Sym{SymPyPythonCall._PyType}
+# used at runtime is Sym{PythonCall.Py}.
+# This mirrors the pattern used in BSeries.jl.
+const _Sym = SymPyPythonCall.Sym{SymPyPythonCall.PythonCall.Core.Py}
 
 function PolynomialBases.interpolation_matrix!(mat, dest, src::AbstractVector{<:SymPyPythonCall.Sym}, baryweights)
     @boundscheck begin
