@@ -1,8 +1,6 @@
 module PolynomialBasesSymPyPythonCallExt
 
-using PolynomialBases: PolynomialBases, barycentric_weights, derivative_matrix,
-                       interpolation_matrix, LobattoLegendre, GaussLegendre,
-                       GaussRadauLeft, GaussRadauRight
+using PolynomialBases: PolynomialBases
 using SymPyPythonCall: SymPyPythonCall
 
 # SymPyPythonCall.Sym is the UnionAll Sym{T} where T; the concrete type

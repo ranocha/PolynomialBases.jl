@@ -1,8 +1,6 @@
 module PolynomialBasesSymPyExt
 
-using PolynomialBases: PolynomialBases, barycentric_weights, derivative_matrix,
-                       interpolation_matrix, LobattoLegendre, GaussLegendre,
-                       GaussRadauLeft, GaussRadauRight
+using PolynomialBases: PolynomialBases
 using SymPy: SymPy
 
 include("general_symbolic_extension.jl")

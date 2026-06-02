@@ -1,8 +1,6 @@
 module PolynomialBasesSymEngineExt
 
-using PolynomialBases: PolynomialBases, barycentric_weights, derivative_matrix,
-                       interpolation_matrix, LobattoLegendre, GaussLegendre,
-                       GaussRadauLeft, GaussRadauRight
+using PolynomialBases: PolynomialBases
 using SymEngine: SymEngine
 
 include("general_symbolic_extension.jl")

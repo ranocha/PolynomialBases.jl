@@ -1,11 +1,11 @@
 # Common implementation for symbolic polynomial bases.
 # This file is included into each symbolic extension module.
-# The including module must have imported from PolynomialBases:
-#   barycentric_weights, derivative_matrix, interpolation_matrix,
-#   LobattoLegendre, GaussLegendre, GaussRadauLeft, GaussRadauRight
-#
 # Each function accepts a simplify_fn argument, e.g.:
 #   SymEngine.expand, SymPy.simplify, or SymPyPythonCall.simplify
+
+using PolynomialBases: barycentric_weights, derivative_matrix,
+                       interpolation_matrix, LobattoLegendre, GaussLegendre,
+                       GaussRadauLeft, GaussRadauRight
 
 function symbolic_interpolation_matrix!(mat, dest, src, baryweights, simplify_fn)
     @boundscheck begin
