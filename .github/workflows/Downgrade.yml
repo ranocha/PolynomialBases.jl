@@ -32,12 +32,19 @@ jobs:
         uses: julia-actions/julia-downgrade-compat@v2
         with:
           skip: LinearAlgebra,Test
+          projects: ., test
           mode: forcedeps
-      - name: Develop package and instantiate dependencies
+      # We run the tests manually instead of using julia-action/julia-builpkg and julia-action/julia-runtest or `Pkg.test`
+      # because otherwise the downgraded Manifest.toml is not used in the tests under julia <v1.12
+      # see also https://github.com/julia-actions/julia-downgrade-compat/blob/00f940b7be2b50389571ed016d603be561649103/README.md#L89
+      - name: Run tests
         run: |
-          julia --project -e 'import Pkg; Pkg.develop(path="."); Pkg.instantiate()'
-      - name: Check manifest
-        run: julia --project -e 'import Pkg; Pkg.status()'
-      - uses: julia-actions/julia-runtest@v1
+          julia --project=test --color=yes -e '
+            import Pkg
+            Pkg.develop(Pkg.PackageSpec(path=pwd()))
+            Pkg.instantiate()
+            Pkg.status(; mode = Pkg.PKGMODE_MANIFEST)
+            include("test/runtests.jl")
+          '
         env:
           PYTHON: ""
