@@ -25,7 +25,7 @@ PolynomialBasesSymPyPythonCallExt = "SymPyPythonCall"
 [compat]
 ArgCheck = "2.0"
 AutoHashEquals = "0.2, 1, 2"
-FFTW = "1"
+FFTW = "1.4"
 FastGaussQuadrature = "0.4.4, 0.5, 1"
 SimpleUnPack = "1"
 SpecialFunctions = "1, 2"
