@@ -5,3 +5,4 @@
 **/Manifest.toml
 *.code-workspace
 **/run*/
+**/.CondaPkg/

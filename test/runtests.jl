@@ -16,4 +16,5 @@ using PolynomialBases
     @time @testset "Utilities" begin include("utilities_test.jl") end
     @time @testset "Symbolic Bases (SymPy)" begin include("sympy_test.jl") end
     @time @testset "Symbolic Bases (SymEngine)" begin include("symengine_test.jl") end
+    @time @testset "Symbolic Bases (SymPyPythonCall)" begin include("sympypythoncall_test.jl") end
 end
