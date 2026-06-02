@@ -23,5 +23,27 @@ for p in 0:4
 end
 @test_throws ArgumentError GaussLegendre(5, SymEngine.Basic)
 
+for p in 0:2
+    basis_symbolic = GaussRadauLeft(p, SymEngine.Basic)
+    basis_float = GaussRadauLeft(p, Float64)
+    @test maximum(abs.( float.(basis_symbolic.nodes) - basis_float.nodes )) < tol
+    @test maximum(abs.( float.(basis_symbolic.weights) - basis_float.weights )) < tol
+    @test maximum(abs.( float.(basis_symbolic.baryweights) - basis_float.baryweights )) < tol
+    @test maximum(abs.( float.(basis_symbolic.D) - basis_float.D, )) < tol
+end
+@test_throws ArgumentError GaussRadauLeft(3, SymEngine.Basic)
+
+for p in 0:2
+    basis_symbolic = GaussRadauRight(p, SymEngine.Basic)
+    basis_float = GaussRadauRight(p, Float64)
+    @test maximum(abs.( float.(basis_symbolic.nodes) - basis_float.nodes )) < tol
+    @test maximum(abs.( float.(basis_symbolic.weights) - basis_float.weights )) < tol
+    @test maximum(abs.( float.(basis_symbolic.baryweights) - basis_float.baryweights )) < tol
+    @test maximum(abs.( float.(basis_symbolic.D) - basis_float.D, )) < tol
+end
+@test_throws ArgumentError GaussRadauRight(3, SymEngine.Basic)
+
 interpolation_matrix([-1, 1], LobattoLegendre(4, SymEngine.Basic))
 interpolation_matrix([-1, 1], GaussLegendre(4, SymEngine.Basic))
+interpolation_matrix([-1, 1], GaussRadauLeft(2, SymEngine.Basic))
+interpolation_matrix([-1, 1], GaussRadauRight(2, SymEngine.Basic))

@@ -25,6 +25,28 @@ if !haskey(ENV, "JULIA_PKGEVAL") # sympy is not installed on https://github.com/
   end
   @test_throws ArgumentError GaussLegendre(5, SymPy.Sym)
 
+  for p in 0:2
+      basis_sympy = GaussRadauLeft(p, SymPy.Sym)
+      basis_float = GaussRadauLeft(p, Float64)
+      @test maximum(abs.( float.(basis_sympy.nodes) - basis_float.nodes )) < tol
+      @test maximum(abs.( float.(basis_sympy.weights) - basis_float.weights )) < tol
+      @test maximum(abs.( float.(basis_sympy.baryweights) - basis_float.baryweights )) < tol
+      @test maximum(abs.( float.(basis_sympy.D) - basis_float.D, )) < 2tol
+  end
+  @test_throws ArgumentError GaussRadauLeft(3, SymPy.Sym)
+
+  for p in 0:2
+      basis_sympy = GaussRadauRight(p, SymPy.Sym)
+      basis_float = GaussRadauRight(p, Float64)
+      @test maximum(abs.( float.(basis_sympy.nodes) - basis_float.nodes )) < tol
+      @test maximum(abs.( float.(basis_sympy.weights) - basis_float.weights )) < tol
+      @test maximum(abs.( float.(basis_sympy.baryweights) - basis_float.baryweights )) < tol
+      @test maximum(abs.( float.(basis_sympy.D) - basis_float.D, )) < 2tol
+  end
+  @test_throws ArgumentError GaussRadauRight(3, SymPy.Sym)
+
   interpolation_matrix([-1, 1], LobattoLegendre(4, SymPy.Sym))
   interpolation_matrix([-1, 1], GaussLegendre(4, SymPy.Sym))
+  interpolation_matrix([-1, 1], GaussRadauLeft(2, SymPy.Sym))
+  interpolation_matrix([-1, 1], GaussRadauRight(2, SymPy.Sym))
 end

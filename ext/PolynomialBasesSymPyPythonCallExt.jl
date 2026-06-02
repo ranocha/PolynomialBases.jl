@@ -128,8 +128,7 @@ function PolynomialBases.GaussRadauLeft(p::Int, ::Type{<:SymPyPythonCall.Sym})
         nodes   = T[-1]
         weights = T[2]
     elseif p == 1
-        sqrt_1_3 = sqrt(one(T) / 3)
-        nodes   = T[-1, sqrt_1_3]
+        nodes   = T[-1, one(T) / 3]
         weights = T[1//2, 3//2]
     elseif p == 2
         sqrt_6 = sqrt(T(6))
@@ -150,8 +149,7 @@ function PolynomialBases.GaussRadauRight(p::Int, ::Type{<:SymPyPythonCall.Sym})
         nodes   = T[1]
         weights = T[2]
     elseif p == 1
-        sqrt_1_3 = sqrt(one(T) / 3)
-        nodes   = T[-sqrt_1_3, 1]
+        nodes   = T[-one(T) / 3, 1]
         weights = T[3//2, 1//2]
     elseif p == 2
         sqrt_6 = sqrt(T(6))
