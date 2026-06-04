@@ -198,7 +198,7 @@ function LobattoLegendre(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     else
-        nodes, weights = gausslobatto(p+1) # TODO: Use gausslobatto(T, p+1) once FastGaussQuadrature.jl v1.3.0 is released
+        nodes, weights = gausslobatto(T, p+1)
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
