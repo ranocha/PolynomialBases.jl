@@ -67,45 +67,6 @@ function jacobi_and_derivative(x, p::Integer, α, β)
     b, (α+β+p+1)*aa/2
 end
 
-
-"""
-    gauss_jacobi_nodes_and_weights(p, α, β, T=Float64::Type, tol=4*eps(T), maxit=100)
-
-Compute the Gauss-Jacobi nodes and weights for polynomials of degree `p` with
-parameters `α`, `β` using the scalar type `T`, tolerance `tol` and maximal number
-of Newton iterations `maxit` [Karniadakis and Sherwin, Spectral/hp Element
-Methods for CFD, Appendix B].
-"""
-function gauss_jacobi_nodes_and_weights(p, α, β, T=Float64::Type, tol=4*eps(T), maxit=1000)
-    T = promote_type(typeof(α), typeof(β), T)
-    nodes = Vector{T}(undef, p+1)
-    weights = Vector{T}(undef, p+1)
-    for j in 0:p
-        x = -cospi(T(2j+1)/(2p+2))
-        if j > 0
-            x = (x + nodes[j]) / 2
-        end
-        for k in 1:maxit
-            s = zero(T)
-            for l in 1:j
-                s += 1 / (x - nodes[l])
-            end
-            pol, der = jacobi_and_derivative(x, p+1, α, β)
-            Δ = -pol / (der - s*pol)
-            x = x + Δ
-            abs(Δ) <= tol*abs(x) && break
-        end
-        pol, der = jacobi_and_derivative(x, p+1, α, β)
-        nodes[j+1] = x
-        weights[j+1] = 2^(α+β+1) * gamma(α+p+2) * gamma(β+p+2) /
-                        (gamma(p+2) * gamma(α+β+p+2) * (1-x^2) * der^2)
-    end
-
-    return nodes, weights
-end
-
-
-
 """
     jacobi_vandermonde(nodes, α, β)
 

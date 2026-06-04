@@ -198,21 +198,11 @@ function LobattoLegendre(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     else
-        nodes, weights = lobatto_legendre_nodes_and_weights_impl(p, T)
+        nodes, weights = gausslobatto(p+1) # TODO: Use gausslobatto(T, p+1) once FastGaussQuadrature.jl v1.3.0 is released
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     LobattoLegendre(nodes, weights, baryweights, D)
-end
-
-function lobatto_legendre_nodes_and_weights_impl(p, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gausslobatto(p+1)
-    nodes, weights
-end
-
-function lobatto_legendre_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
-    nodes, weights
 end
 
 function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
@@ -253,21 +243,11 @@ end
 Generate the `GaussLegendre` basis of degree `p` with scalar type `T`.
 """
 function GaussLegendre(p::Int, T=Float64)
-    nodes, weights = gauss_legendre_nodes_and_weights_impl(p, T)
+    nodes, weights = gausslegendre(T, p+1)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
     GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
-end
-
-function gauss_legendre_nodes_and_weights_impl(p, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gausslegendre(p+1)
-    nodes, weights
-end
-
-function gauss_legendre_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = gauss_legendre_nodes_and_weights(p, T)
-    nodes, weights
 end
 
 function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
@@ -308,16 +288,11 @@ end
 Generate the `GaussRadauLeft` basis of degree `p` with scalar type `T`.
 """
 function GaussRadauLeft(p::Int, T=Float64)
-    nodes, weights = gauss_radau_nodes_and_weights_impl(p, T)
+    nodes, weights = gaussradau(T, p+1)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
     GaussRadauLeft(nodes, weights, baryweights, D, R[1,:], R[2,:])
-end
-
-function gauss_radau_nodes_and_weights_impl(p, T::DataType)
-    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
-    nodes, weights
 end
 
 function Base.show(io::IO, basis::GaussRadauLeft{T}) where {T}
@@ -366,7 +341,7 @@ function GaussRadauRight(p::Int, T=Float64)
 end
 
 function gauss_radau_nodes_and_weights_right_impl(p, T::DataType)
-    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
+    nodes::Vector{T}, weights::Vector{T} = gaussradau(T, p+1)
     # `gaussradau` returns the nodes in [-1, 1] always including the left end point,
     # so we can reverse the weights and negative nodes to include the right end point
     -reverse(nodes), reverse(weights)
@@ -411,20 +386,10 @@ Generate the `JacobiLegendre` basis of degree `p` with parameters `α`, `β` and
 scalar type `T`.
 """
 function GaussJacobi(p::Int, α, β, T=Float64)
-    nodes, weights = gauss_jacobi_nodes_and_weights_impl(p, α, β, T)
+    nodes, weights = gaussjacobi(p+1, T(α), T(β))
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     GaussJacobi(promote(α, β)..., nodes, weights, baryweights, D)
-end
-
-function gauss_jacobi_nodes_and_weights_impl(p, α, β, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, Float64(α), Float64(β))
-    nodes, weights
-end
-
-function gauss_jacobi_nodes_and_weights_impl(p, α, β, T::DataType)
-    nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
-    nodes, weights
 end
 
 GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)
