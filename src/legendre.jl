@@ -22,52 +22,6 @@ function legendre(x, p::Integer)
 end
 
 """
-    legendre_and_derivative(x, p::Integer)
-
-Evaluate the Legendre polynomial of degree `p` and its derivative at `x` using
-the three term recursion [Kopriva, Implementing Spectral Methods for PDEs,
-Algorithm 22].
-"""
-function legendre_and_derivative(x, p::Integer)
-    # coefficients for the polynomial...
-    a::typeof(x) = one(x)
-    b::typeof(x) = x
-    # ... and for the derivative
-    aa::typeof(x) = zero(x)
-    bb::typeof(x) = one(x)
-
-    if p <= 0
-        return a, aa
-    elseif p == 1
-        return b, bb
-    end
-
-    for j in 2:p
-        a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
-        aa, bb = bb, aa + (2j-1)*a
-    end
-
-    b, bb
-end
-
-# helper function [Kopriva, Implementing Spectral Methods for PDEs, Algorithm 24]
-function q_and_L_evaluation(x, p::Integer)
-    a = one(x)
-    b = x
-    aa = zero(x)
-    bb = one(x)
-
-    for j in 2:p
-        a, b = b, ( (2j-1)*x*b - (j-1)*a ) / j
-        aa, bb = bb, aa + (2j-1)*a
-    end
-    pol = ( (2p+1)*x*b - p*a ) / (p+1)
-    der = aa + (2p+1)*b
-
-    pol-a, der-aa, b
-end
-
-"""
     legendre_vandermonde(nodes)
 
 Computes the Vandermonde matrix with respect to the Legendre polynomials and
