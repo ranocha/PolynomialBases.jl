@@ -198,7 +198,7 @@ function LobattoLegendre(p::Int, T=Float64)
         nodes = T[0]
         weights = T[2]
     else
-        nodes, weights = gausslobatto(p+1) # TODO: Use gausslobatto(T, p+1) once FastGaussQuadrature.jl v1.3.0 is released
+        nodes::Vector{T}, weights::Vector{T} = gausslobatto(p+1) # TODO: Use gausslobatto(T, p+1) once FastGaussQuadrature.jl v1.3.0 is released
     end
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
@@ -243,7 +243,7 @@ end
 Generate the `GaussLegendre` basis of degree `p` with scalar type `T`.
 """
 function GaussLegendre(p::Int, T=Float64)
-    nodes, weights = gausslegendre(T, p+1)
+    nodes::Vector{T}, weights::Vector{T} = gausslegendre(T, p+1)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
@@ -288,7 +288,7 @@ end
 Generate the `GaussRadauLeft` basis of degree `p` with scalar type `T`.
 """
 function GaussRadauLeft(p::Int, T=Float64)
-    nodes, weights = gaussradau(T, p+1)
+    nodes::Vector{T}, weights::Vector{T} = gaussradau(T, p+1)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
@@ -333,7 +333,7 @@ end
 Generate the `GaussRadauRight` basis of degree `p` with scalar type `T`.
 """
 function GaussRadauRight(p::Int, T=Float64)
-    nodes, weights = gauss_radau_nodes_and_weights_right_impl(p, T)
+    nodes::Vector{T}, weights::Vector{T} = gauss_radau_nodes_and_weights_right_impl(p, T)
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     R = interpolation_matrix(T[-1, 1], nodes, baryweights)
@@ -386,7 +386,7 @@ Generate the `JacobiLegendre` basis of degree `p` with parameters `α`, `β` and
 scalar type `T`.
 """
 function GaussJacobi(p::Int, α, β, T=Float64)
-    nodes, weights = gaussjacobi(p+1, T(α), T(β))
+    nodes::Vector{T}, weights::Vector{T} = gaussjacobi(p+1, T(α), T(β))
     baryweights = barycentric_weights(nodes)
     D = derivative_matrix(nodes, baryweights)
     GaussJacobi(promote(α, β)..., nodes, weights, baryweights, D)
