@@ -261,13 +261,11 @@ function GaussLegendre(p::Int, T=Float64)
 end
 
 function gauss_legendre_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
-    nodes, weights = gausslegendre(T, p+1)
-    nodes, weights
+    gausslegendre(T, p+1)
 end
 
 function gauss_legendre_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = gauss_legendre_nodes_and_weights(p, T)
-    nodes, weights
+    gauss_legendre_nodes_and_weights(p, T)
 end
 
 function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
@@ -316,8 +314,7 @@ function GaussRadauLeft(p::Int, T=Float64)
 end
 
 function gauss_radau_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = gaussradau(T, p+1)
-    nodes, weights
+    gaussradau(T, p+1)
 end
 
 function Base.show(io::IO, basis::GaussRadauLeft{T}) where {T}
@@ -418,13 +415,11 @@ function GaussJacobi(p::Int, α, β, T=Float64)
 end
 
 function gauss_jacobi_nodes_and_weights_impl(p, α, β, T::Union{Type{Float64}, Type{Type{Float32}}})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, T(α), T(β))
-    nodes, weights
+    gaussjacobi(p+1, T(α), T(β))
 end
 
 function gauss_jacobi_nodes_and_weights_impl(p, α, β, T::DataType)
-    nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
-    nodes, weights
+    gauss_jacobi_nodes_and_weights(p, α, β, T)
 end
 
 GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)
