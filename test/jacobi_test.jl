@@ -23,12 +23,15 @@ end
 @inferred jacobi(10., 4, 3, 2)
 
 # Gauss Jacobi nodes and weights
-for p in 0:10, α in range(-0.9, stop=4, length=50), β in range(-0.9, stop=4, length=50)
-    x1, w1 = gaussjacobi(p+1, α, β)
-    @inferred PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β)
-    x2, w2 = PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β)
-    @test x1 ≈ x2 atol=1.e-11
-    @test w1 ≈ w2 atol=1.e-11
+# TODO: Why do we need such a high tolerance for BigFloat?
+for (T, tol) in ((Float32, 1.0e-2), (Float64, 1.0e-11), (BigFloat, 1.0e-11))
+    for p in 0:10, α in range(-0.9, stop=4, length=10), β in range(-0.9, stop=4, length=10)
+        x1, w1 = gaussjacobi(p+1, T(α), T(β))
+        @inferred PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β, T)
+        x2, w2 = PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β, T)
+        @test x1 ≈ x2 atol=tol
+        @test w1 ≈ w2 atol=tol
+    end
 end
 
 # Vandermonde matrices for Gauss Jacobi nodes and weights

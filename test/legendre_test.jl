@@ -17,21 +17,25 @@ end
 @inferred legendre(10., 4)
 
 # Gauss Legendre nodes and weights
-for p in 0:20
-    x1, w1 = gausslegendre(p+1)
-    @inferred PolynomialBases.gauss_legendre_nodes_and_weights(p)
-    x2, w2 = PolynomialBases.gauss_legendre_nodes_and_weights(p)
-    @test x1 ≈ x2 atol=1.e-14
-    @test w1 ≈ w2 atol=1.e-14
+for (T, tol) in ((Float32, 1.0e-5), (Float64, 1.0e-14), (BigFloat, 1.0e-50))
+    for p in 0:20
+        x1, w1 = gausslegendre(T, p+1)
+        @inferred PolynomialBases.gauss_legendre_nodes_and_weights(p, T)
+        x2, w2 = PolynomialBases.gauss_legendre_nodes_and_weights(p, T)
+        @test x1 ≈ x2 atol=tol
+        @test w1 ≈ w2 atol=tol
+    end
 end
 
 # Lobatto Legendre nodes and weights
-for p in 1:20
-    x1, w1 = gausslobatto(p+1)
-    @inferred PolynomialBases.lobatto_legendre_nodes_and_weights(p)
-    x2, w2 = PolynomialBases.lobatto_legendre_nodes_and_weights(p)
-    @test x1 ≈ x2 atol=1.e-14
-    @test w1 ≈ w2 atol=1.e-14
+for (T, tol) in ((Float32, 1.0e-5), (Float64, 1.0e-14), (BigFloat, 1.0e-50))
+    for p in 1:20
+        x1, w1 = gausslobatto(T, p+1)
+        @inferred PolynomialBases.lobatto_legendre_nodes_and_weights(p, T)
+        x2, w2 = PolynomialBases.lobatto_legendre_nodes_and_weights(p, T)
+        @test x1 ≈ x2 atol=tol
+        @test w1 ≈ w2 atol=tol
+    end
 end
 
 # Derivative and mass matrices for Gauss Legendre nodes and weights
