@@ -3,12 +3,15 @@ using Test, PolynomialBases
 ufunc(x) = sinpi(x)
 
 for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
-    for p in 1:5, T in (Float32, Float64)
+    for p in 1:5, T in (Float32, Float64, BigFloat)
         basis = basis_type(p, T)
         @inferred basis_type(p, T)
         @test eltype(basis.nodes) == T
         @test eltype(basis) == T
         @test basis == basis_type(p, T)
+        # TODO: Skip tests for Clenshaw-Curtis basis with BigFloat since it produces negative weights
+        # This seems like an issue with FFTW.plan_r2r! from FFTW.jl for `BigFloats``
+        T == BigFloat && basis isa ClenshawCurtis && continue
         u = ufunc.(basis.nodes)
         D, M, R, B, MinvRtB = utility_matrices(basis)
         @test Matrix(basis) == D
