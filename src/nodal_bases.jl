@@ -206,7 +206,7 @@ function LobattoLegendre(p::Int, T=Float64)
 end
 
 function lobatto_legendre_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gausslobatto(T, p+1)
+    nodes, weights = gausslobatto(T, p+1)
     nodes, weights
 end
 
@@ -261,7 +261,7 @@ function GaussLegendre(p::Int, T=Float64)
 end
 
 function gauss_legendre_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gausslegendre(T, p+1)
+    nodes, weights = gausslegendre(T, p+1)
     nodes, weights
 end
 
@@ -316,7 +316,7 @@ function GaussRadauLeft(p::Int, T=Float64)
 end
 
 function gauss_radau_nodes_and_weights_impl(p, T::DataType)
-    nodes::Vector{Float64}, weights::Vector{Float64} = gaussradau(T, p+1)
+    nodes, weights = gaussradau(T, p+1)
     nodes, weights
 end
 
@@ -366,7 +366,7 @@ function GaussRadauRight(p::Int, T=Float64)
 end
 
 function gauss_radau_nodes_and_weights_right_impl(p, T::DataType)
-    nodes::Vector{T}, weights::Vector{T} = gaussradau(T, p+1)
+    nodes, weights = gaussradau(T, p+1)
     # `gaussradau` returns the nodes in [-1, 1] always including the left end point,
     # so we can reverse the weights and negative nodes to include the right end point
     -reverse(nodes), reverse(weights)
