@@ -10,7 +10,7 @@ for basis_type in subtypes(PolynomialBases.NodalBasis{PolynomialBases.Line})
         @test eltype(basis) == T
         @test basis == basis_type(p, T)
         # TODO: Skip tests for Clenshaw-Curtis basis with BigFloat since it produces negative weights
-        # This seems like an issue with FFTW.plan_r2r! from FFTW.jl for `BigFloats``
+        # This seems like an issue with FFTW.plan_r2r! from FFTW.jl for `BigFloats`.
         T == BigFloat && basis isa ClenshawCurtis && continue
         u = ufunc.(basis.nodes)
         D, M, R, B, MinvRtB = utility_matrices(basis)
