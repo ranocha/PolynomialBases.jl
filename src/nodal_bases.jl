@@ -315,13 +315,8 @@ function GaussRadauLeft(p::Int, T=Float64)
     GaussRadauLeft(nodes, weights, baryweights, D, R[1,:], R[2,:])
 end
 
-function gauss_radau_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gaussradau(T, p+1)
-    nodes, weights
-end
-
 function gauss_radau_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = gaussradau(T, p+1)
+    nodes::Vector{Float64}, weights::Vector{Float64} = gaussradau(T, p+1)
     nodes, weights
 end
 
