@@ -206,13 +206,11 @@ function LobattoLegendre(p::Int, T=Float64)
 end
 
 function lobatto_legendre_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
-    nodes, weights = gausslobatto(T, p+1)
-    nodes, weights
+    gausslobatto(T, p+1)
 end
 
 function lobatto_legendre_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
-    nodes, weights
+    lobatto_legendre_nodes_and_weights(p, T)
 end
 
 function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
