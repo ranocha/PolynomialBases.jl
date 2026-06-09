@@ -9,7 +9,7 @@
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/P/PolynomialBases.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html) -->
 
 A library of functions for polynomial bases used in spectral element methods using the quadrature rules from
-[FastGaussQuadrature.jl](https://github.com/ajt60gaibb/FastGaussQuadrature.jl) for `Float64` and root finding
+[FastGaussQuadrature.jl](https://github.com/ajt60gaibb/FastGaussQuadrature.jl) for `Float64` and `Float32` and root finding
 via the Newton algorithm for other scalar types (such as `BigFloat`). The algorithms for interpolation and
 differentiation use barycentric weights as described in the book "Implementing Spectral Methods for PDEs"
 by David Kopriva. If [SymPy.jl](https://github.com/JuliaPy/SymPy.jl),

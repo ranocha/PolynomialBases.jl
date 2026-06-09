@@ -7,7 +7,7 @@ using AutoHashEquals: @auto_hash_equals
 using FFTW: FFTW
 using FastGaussQuadrature: FastGaussQuadrature, gausslegendre, gausslobatto, gaussjacobi, gaussradau
 using SimpleUnPack: @unpack
-using SpecialFunctions: gamma
+using Gamma: gamma
 
 
 # types

@@ -205,14 +205,12 @@ function LobattoLegendre(p::Int, T=Float64)
     LobattoLegendre(nodes, weights, baryweights, D)
 end
 
-function lobatto_legendre_nodes_and_weights_impl(p, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gausslobatto(p+1)
-    nodes, weights
+function lobatto_legendre_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
+    gausslobatto(T, p+1)
 end
 
 function lobatto_legendre_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = lobatto_legendre_nodes_and_weights(p, T)
-    nodes, weights
+    lobatto_legendre_nodes_and_weights(p, T)
 end
 
 function Base.show(io::IO, basis::LobattoLegendre{T}) where {T}
@@ -260,14 +258,12 @@ function GaussLegendre(p::Int, T=Float64)
     GaussLegendre(nodes, weights, baryweights, D, R[1,:], R[2,:])
 end
 
-function gauss_legendre_nodes_and_weights_impl(p, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gausslegendre(p+1)
-    nodes, weights
+function gauss_legendre_nodes_and_weights_impl(p, T::Union{Type{Float64}, Type{Float32}})
+    gausslegendre(T, p+1)
 end
 
 function gauss_legendre_nodes_and_weights_impl(p, T::DataType)
-    nodes, weights = gauss_legendre_nodes_and_weights(p, T)
-    nodes, weights
+    gauss_legendre_nodes_and_weights(p, T)
 end
 
 function Base.show(io::IO, basis::GaussLegendre{T}) where {T}
@@ -316,8 +312,7 @@ function GaussRadauLeft(p::Int, T=Float64)
 end
 
 function gauss_radau_nodes_and_weights_impl(p, T::DataType)
-    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
-    nodes, weights
+    gaussradau(T, p+1)
 end
 
 function Base.show(io::IO, basis::GaussRadauLeft{T}) where {T}
@@ -366,7 +361,7 @@ function GaussRadauRight(p::Int, T=Float64)
 end
 
 function gauss_radau_nodes_and_weights_right_impl(p, T::DataType)
-    nodes::Vector{T}, weights::Vector{T} = gaussradau(p+1, T)
+    nodes, weights = gaussradau(T, p+1)
     # `gaussradau` returns the nodes in [-1, 1] always including the left end point,
     # so we can reverse the weights and negative nodes to include the right end point
     -reverse(nodes), reverse(weights)
@@ -417,14 +412,12 @@ function GaussJacobi(p::Int, α, β, T=Float64)
     GaussJacobi(promote(α, β)..., nodes, weights, baryweights, D)
 end
 
-function gauss_jacobi_nodes_and_weights_impl(p, α, β, ::Type{Float64})
-    nodes::Vector{Float64}, weights::Vector{Float64} = gaussjacobi(p+1, Float64(α), Float64(β))
-    nodes, weights
+function gauss_jacobi_nodes_and_weights_impl(p, α, β, T::Union{Type{Float64}, Type{Type{Float32}}})
+    gaussjacobi(p+1, T(α), T(β))
 end
 
 function gauss_jacobi_nodes_and_weights_impl(p, α, β, T::DataType)
-    nodes, weights = gauss_jacobi_nodes_and_weights(p, α, β, T)
-    nodes, weights
+    gauss_jacobi_nodes_and_weights(p, α, β, T)
 end
 
 GaussJacobi(p::Int, T=Float64) = GaussJacobi(p, 0, 0, T)

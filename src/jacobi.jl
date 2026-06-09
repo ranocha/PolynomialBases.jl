@@ -78,6 +78,8 @@ Methods for CFD, Appendix B].
 """
 function gauss_jacobi_nodes_and_weights(p, α, β, T=Float64::Type, tol=4*eps(T), maxit=1000)
     T = promote_type(typeof(α), typeof(β), T)
+    α = T(α)
+    β = T(β)
     nodes = Vector{T}(undef, p+1)
     weights = Vector{T}(undef, p+1)
     for j in 0:p
