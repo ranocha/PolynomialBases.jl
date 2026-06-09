@@ -23,13 +23,12 @@ end
 @inferred jacobi(10., 4, 3, 2)
 
 # Gauss Jacobi nodes and weights
-for (T, tol) in ((Float32, 1.0e-2), (Float64, 1.0e-11), (BigFloat, 1.0e-50))
+for T in (Float32, Float64, BigFloat)
     for p in 0:10, α in range(-0.9, stop=4, length=10), β in range(-0.9, stop=4, length=10)
         x1, w1 = gaussjacobi(p+1, T(α), T(β))
-        @inferred PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β, T)
-        x2, w2 = PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β, T)
-        @test x1 ≈ x2 atol=tol
-        @test w1 ≈ w2 atol=tol
+        x2, w2 = @inferred PolynomialBases.gauss_jacobi_nodes_and_weights(p, α, β, T)
+        @test x1 ≈ x2
+        @test w1 ≈ w2
     end
 end
 
