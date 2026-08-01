@@ -29,7 +29,7 @@ jobs:
       - name: Run julia version info
         run: julia --project -e 'import Pkg; Pkg.status()'
       - name: Run downgrade
-        uses: julia-actions/julia-downgrade-compat@v2
+        uses: julia-actions/julia-downgrade-compat@v2.6.2
         with:
           skip: LinearAlgebra,Test
           projects: ., test
